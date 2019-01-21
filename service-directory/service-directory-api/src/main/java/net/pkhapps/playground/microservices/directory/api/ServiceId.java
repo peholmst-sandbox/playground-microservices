@@ -12,7 +12,7 @@ import java.util.Objects;
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */
-public class ServiceId implements Serializable {
+public final class ServiceId implements Serializable {
 
     @JsonValue
     private final String id;

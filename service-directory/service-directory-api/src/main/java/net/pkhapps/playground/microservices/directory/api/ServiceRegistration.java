@@ -21,7 +21,7 @@ import java.util.Objects;
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */
-public class ServiceRegistration implements Serializable {
+public final class ServiceRegistration implements Serializable {
 
     @JsonProperty
     private final ServiceId id;

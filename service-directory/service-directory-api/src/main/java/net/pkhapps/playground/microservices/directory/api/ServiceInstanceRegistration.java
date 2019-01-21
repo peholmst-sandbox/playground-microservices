@@ -159,7 +159,7 @@ public final class ServiceInstanceRegistration implements Serializable {
 
     /**
      * Returns an optional URI where the documentation of the service instance can be found. This is intended for new
-     * clients that which to utilize this service instance.
+     * clients that wish to utilize this service instance.
      */
     @JsonIgnore
     public Optional<URI> getDocumentationUri() {
