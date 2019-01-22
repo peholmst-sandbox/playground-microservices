@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Value object representing the ID of a {@link Service}. Essentially this is a wrapper around a string and so the
- * actual ID can be of any format.
+ * Value object representing the ID of a service. Essentially this is a wrapper around a string and so the actual ID can
+ * be of any format.
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */

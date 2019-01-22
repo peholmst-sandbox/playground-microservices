@@ -28,12 +28,12 @@ public final class FrontendInstanceRegistration extends ResourceInstanceRegistra
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    protected FrontendInstanceRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
-                                           @JsonProperty(value = "version", required = true) Version version,
-                                           @JsonProperty(value = "clientUri", required = true) URI clientUri,
-                                           @JsonProperty(value = "pingUri", required = true) URI pingUri,
-                                           @JsonProperty(value = "algorithm", required = true) String algorithm,
-                                           @JsonProperty(value = "signature", required = true) String signature) {
+    FrontendInstanceRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
+                                 @JsonProperty(value = "version", required = true) Version version,
+                                 @JsonProperty(value = "clientUri", required = true) URI clientUri,
+                                 @JsonProperty(value = "pingUri", required = true) URI pingUri,
+                                 @JsonProperty(value = "algorithm", required = true) String algorithm,
+                                 @JsonProperty(value = "signature", required = true) String signature) {
         super(id, version, clientUri, pingUri, algorithm, signature);
     }
 }

@@ -30,12 +30,12 @@ public final class FrontendRegistration extends ResourceRegistration<FrontendId>
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    protected FrontendRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
-                                   @JsonProperty(value = "name", required = true) String name,
-                                   @JsonProperty(value = "description") @Nullable String description,
-                                   @JsonProperty(value = "iconUri") @Nullable URI iconUri,
-                                   @JsonProperty(value = "algorithm", required = true) String algorithm,
-                                   @JsonProperty(value = "publicKey", required = true) String publicKey) {
+    FrontendRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
+                         @JsonProperty(value = "name", required = true) String name,
+                         @JsonProperty(value = "description") @Nullable String description,
+                         @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+                         @JsonProperty(value = "algorithm", required = true) String algorithm,
+                         @JsonProperty(value = "publicKey", required = true) String publicKey) {
         super(id, name, description, iconUri, algorithm, publicKey);
     }
 }

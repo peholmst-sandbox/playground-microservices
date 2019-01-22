@@ -26,11 +26,11 @@ public class ServiceInstanceRegistrationTest {
 
     @Before
     public void setUp() throws Exception {
-        registration = new ServiceInstanceRegistration(new ServiceId("myservice"),
-                new Version("v1"), "My Service", "My Service Description",
-                URI.create("http://myservice.foo.bar/api/v1"),
-                URI.create("http://myservice.foo.bar/ping/v1"),
-                null,
+        registration = new ServiceInstanceRegistration(
+                new ServiceInstanceDescriptor(new ServiceId("myservice"),
+                        new Version("v1"),
+                        URI.create("http://myservice.foo.bar/api/v1"),
+                        URI.create("http://myservice.foo.bar/ping/v1")),
                 KEY_PAIR.getPrivate());
     }
 
@@ -40,11 +40,11 @@ public class ServiceInstanceRegistrationTest {
     }
 
     @Test
-    public void verifySignature_alterRegistrationData_signatureInvalid() throws Exception {
-        var serviceUriField = ServiceInstanceRegistration.class.getDeclaredField("serviceUri");
-        serviceUriField.setAccessible(true);
-        serviceUriField.set(registration, URI.create("http://myservice.evil.player/api/v1"));
-        assertThat(registration.verifySignature(KEY_PAIR.getPublic())).isFalse();
+    public void verifySignature_alterRegistrationData_signatureInvalid() {
+        var alteredRegistration = new ServiceInstanceRegistration(registration.getId(), registration.getVersion(),
+                URI.create("http://myservice.evil.corp/api/v1"),
+                registration.getPingUri(), registration.getAlgorithm(), registration.getSignature());
+        assertThat(alteredRegistration.verifySignature(KEY_PAIR.getPublic())).isFalse();
     }
 
     @Test
