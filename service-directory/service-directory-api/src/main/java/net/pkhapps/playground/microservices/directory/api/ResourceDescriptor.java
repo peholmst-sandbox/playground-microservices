@@ -48,16 +48,29 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param origin the resource descriptor to copy from.
+     */
+    protected ResourceDescriptor(ResourceDescriptor<ID> origin) {
+        Objects.requireNonNull(origin, "origin must not be null");
+        this.id = origin.id;
+        this.name = origin.name;
+        this.description = origin.description;
+        this.iconUri = origin.iconUri;
+    }
+
+    /**
      * Returns the ID of the resource.
      */
-    public ID getId() {
+    public final ID getId() {
         return id;
     }
 
     /**
      * Returns the human readable name of the resource.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -65,7 +78,7 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
      * Returns the optional human readable description of the resource.
      */
     @JsonIgnore
-    public Optional<String> getDescription() {
+    public final Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
 
@@ -73,7 +86,7 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
      * Returns the optional icon URI of the resource.
      */
     @JsonIgnore
-    public Optional<URI> getIconUri() {
+    public final Optional<URI> getIconUri() {
         return Optional.ofNullable(iconUri);
     }
 

@@ -34,15 +34,11 @@ public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
     /**
      * Creates a new resource registration.
      *
-     * @param id          the ID of the resource.
-     * @param name        the human readable name of the resource.
-     * @param description an optional human readable description of the resource.
-     * @param iconUri     an optional URI of an icon for the resource.
-     * @param publicKey   the public key of the service. The public key must support {@link PublicKey#getEncoded() encoding}.
+     * @param descriptor the resource descriptor.
+     * @param publicKey  the public key of the resource. The public key must support {@link PublicKey#getEncoded() encoding}.
      */
-    public ResourceRegistration(ID id, String name, @Nullable String description, @Nullable URI iconUri,
-                                PublicKey publicKey) {
-        super(id, name, description, iconUri);
+    public ResourceRegistration(ResourceDescriptor<ID> descriptor, PublicKey publicKey) {
+        super(descriptor);
         Objects.requireNonNull(publicKey, "publicKey must not be null");
         this.algorithm = publicKey.getAlgorithm();
         this.publicKey = Base64.getEncoder().encodeToString(Objects.requireNonNull(publicKey.getEncoded(),
@@ -70,7 +66,7 @@ public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
      * resource instance registrations before they are accepted.
      */
     @JsonIgnore
-    public PublicKey getPublicKey() {
+    public final PublicKey getPublicKey() {
         try {
             if (this.cachedPublicKey == null) {
                 this.cachedPublicKey = KeyFactory.getInstance(algorithm)
