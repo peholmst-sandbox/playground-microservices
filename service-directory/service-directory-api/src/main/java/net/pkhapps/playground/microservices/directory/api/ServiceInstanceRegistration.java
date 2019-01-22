@@ -20,7 +20,7 @@ public final class ServiceInstanceRegistration extends ResourceInstanceRegistrat
      * @param privateKey the private key to use when creating the digital signature. The private key will not be stored
      *                   anywhere.
      */
-    public ServiceInstanceRegistration(ResourceInstanceDescriptor<ServiceId> descriptor, PrivateKey privateKey) {
+    public ServiceInstanceRegistration(ServiceInstanceDescriptor descriptor, PrivateKey privateKey) {
         super(descriptor, privateKey);
     }
 

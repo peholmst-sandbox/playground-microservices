@@ -18,7 +18,7 @@ import java.util.Objects;
 public abstract class ResourceInstanceStatus<RID extends ResourceInstanceDescriptor<?>> {
 
     @JsonProperty
-    private final RID instance;
+    private final RID descriptor;
     @JsonProperty
     private final int load;
     @JsonProperty
@@ -29,17 +29,17 @@ public abstract class ResourceInstanceStatus<RID extends ResourceInstanceDescrip
     /**
      * Creates a new resource instance status object.
      *
-     * @param instance the resource instance descriptor.
-     * @param load     the load of the resource instance.
-     * @param lastSeen the instant at which the directory service was last in contact with the resource instance.
-     * @param state    the last known state of the resource instance.
+     * @param descriptor the resource instance descriptor.
+     * @param load       the load of the resource instance.
+     * @param lastSeen   the instant at which the directory service was last in contact with the resource instance.
+     * @param state      the last known state of the resource instance.
      */
     @JsonCreator
-    public ResourceInstanceStatus(@JsonProperty(value = "instance", required = true) RID instance,
+    public ResourceInstanceStatus(@JsonProperty(value = "descriptor", required = true) RID descriptor,
                                   @JsonProperty(value = "load", required = true) int load,
                                   @JsonProperty(value = "lastSeen", required = true) Instant lastSeen,
                                   @JsonProperty(value = "state", required = true) ResourceInstanceState state) {
-        this.instance = Objects.requireNonNull(instance, "instance must not be null");
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor must not be null");
         this.load = load;
         this.lastSeen = Objects.requireNonNull(lastSeen, "lastSeen must not be null");
         this.state = Objects.requireNonNull(state, "state must not be null");
@@ -48,8 +48,8 @@ public abstract class ResourceInstanceStatus<RID extends ResourceInstanceDescrip
     /**
      * Returns the descriptor of the resource instance.
      */
-    public final RID getInstance() {
-        return instance;
+    public final RID getDescriptor() {
+        return descriptor;
     }
 
     /**
@@ -81,13 +81,13 @@ public abstract class ResourceInstanceStatus<RID extends ResourceInstanceDescrip
         if (o == null || getClass() != o.getClass()) return false;
         ResourceInstanceStatus<?> that = (ResourceInstanceStatus<?>) o;
         return load == that.load &&
-                Objects.equals(instance, that.instance) &&
+                Objects.equals(descriptor, that.descriptor) &&
                 Objects.equals(lastSeen, that.lastSeen) &&
                 state == that.state;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instance, load, lastSeen, state);
+        return Objects.hash(descriptor, load, lastSeen, state);
     }
 }

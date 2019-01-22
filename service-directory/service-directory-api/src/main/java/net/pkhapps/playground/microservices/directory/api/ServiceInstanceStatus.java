@@ -16,16 +16,16 @@ public final class ServiceInstanceStatus extends ResourceInstanceStatus<ServiceI
     /**
      * Creates a new service instance status object.
      *
-     * @param instance the service instance descriptor.
-     * @param load     the load of the service instance.
-     * @param lastSeen the instant at which the directory service was last in contact with the service instance.
-     * @param state    the last known state of the service instance.
+     * @param descriptor the service instance descriptor.
+     * @param load       the load of the service instance.
+     * @param lastSeen   the instant at which the directory service was last in contact with the service instance.
+     * @param state      the last known state of the service instance.
      */
     @JsonCreator
-    public ServiceInstanceStatus(@JsonProperty(value = "instance", required = true) ServiceInstanceDescriptor instance,
+    public ServiceInstanceStatus(@JsonProperty(value = "descriptor", required = true) ServiceInstanceDescriptor descriptor,
                                  @JsonProperty(value = "load", required = true) int load,
                                  @JsonProperty(value = "lastSeen", required = true) Instant lastSeen,
                                  @JsonProperty(value = "state", required = true) ResourceInstanceState state) {
-        super(instance, load, lastSeen, state);
+        super(descriptor, load, lastSeen, state);
     }
 }
