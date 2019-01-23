@@ -31,7 +31,7 @@ public class ServiceRegistrationTest {
 
     @Test
     public void initialState() throws Exception {
-        assertThat(registration.getId()).isEqualTo(new ServiceId("myservice"));
+        assertThat(registration.getDescriptor().getId()).isEqualTo(new ServiceId("myservice"));
         assertThat(registration.getPublicKey()).isEqualTo(KEY_PAIR.getPublic());
     }
 

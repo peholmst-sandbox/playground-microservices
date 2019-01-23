@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.util.StopWatch;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -45,20 +46,23 @@ class ServiceDirectoryClient {
     }
 
     Stream<ServiceStatus> retrieveServiceStatus() {
-        LOGGER.info("Retrieving service status");
-        return retrieveStatus("/service/status");
+        return retrieveStatus("service", "/service/status", new ParameterizedTypeReference<List<ServiceStatus>>() {
+        });
     }
 
     Stream<FrontendStatus> retrieveFrontendStatus() {
-        LOGGER.info("Retrieving frontend status");
-        return retrieveStatus("/frontend/status");
+        return retrieveStatus("frontend", "/frontend/status", new ParameterizedTypeReference<List<FrontendStatus>>() {
+        });
     }
 
-    private <RS extends ResourceStatus<?, ?, ?, ?>> Stream<RS> retrieveStatus(String path) {
+    private <RS extends ResourceStatus<?, ?, ?, ?>> Stream<RS> retrieveStatus(String resourceTypeName, String path, ParameterizedTypeReference<List<RS>> typeReference) {
+        LOGGER.debug("Retrieving {} status", resourceTypeName);
+        var stopWatch = new StopWatch();
+        stopWatch.start();
         try {
-            var result = restTemplate.exchange(uriBuilder().path(path).build().toUri(), HttpMethod.GET, null,
-                    new ParameterizedTypeReference<List<RS>>() {
-                    });
+            var result = restTemplate.exchange(uriBuilder().path(path).build().toUri(), HttpMethod.GET, null, typeReference);
+            stopWatch.stop();
+            LOGGER.debug("Retrieved {} status in {} ms", resourceTypeName, stopWatch.getLastTaskTimeMillis());
             switch (result.getStatusCode()) {
                 case OK:
                     return Optional.ofNullable(result.getBody()).stream().flatMap(Collection::stream);
@@ -82,22 +86,17 @@ class ServiceDirectoryClient {
         registerResource(registration, "/frontend", "frontend");
     }
 
-    private void registerResource(ResourceRegistration<?> registration, String path, String resourceTypeName) {
-        LOGGER.info("Registering {} [{}]", resourceTypeName, registration.getId());
-        var id = registration.getId();
-        var uri = uriBuilder().path(path).build(id);
+    private void registerResource(ResourceRegistration<?, ?> registration, String path, String resourceTypeName) {
+        LOGGER.info("Registering {} {}", resourceTypeName, registration.getDescriptor());
+        var stopWatch = new StopWatch();
+        stopWatch.start();
+        var uri = uriBuilder().path(path).build().toUri();
         var entity = new HttpEntity<>(registration);
         // TODO Add authentication header to entity
         try {
-            var result = restTemplate.postForEntity(uri, entity, Void.class);
-            switch (result.getStatusCode()) {
-                case OK:
-                case NO_CONTENT:
-                case CREATED:
-                    return;
-                default:
-                    throw new UnexpectedResponseException(result.getStatusCode());
-            }
+            restTemplate.postForEntity(uri, entity, Void.class);
+            stopWatch.stop();
+            LOGGER.info("Registered {} in {} ms", registration.getDescriptor(), stopWatch.getLastTaskTimeMillis());
         } catch (HttpStatusCodeException ex) {
             if (ex.getStatusCode() == HttpStatus.FORBIDDEN || ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new AccessDeniedException(String.format("Access to register a %s was denied", resourceTypeName));
@@ -109,31 +108,26 @@ class ServiceDirectoryClient {
 
     void registerInstance(ServiceInstanceRegistration registration) {
         Objects.requireNonNull(registration, "registration must not be null");
-        registerInstance(registration, "/service/byId/{id}/instances", "service");
+        registerInstance(registration, "/service/instances", "service");
     }
 
     void registerInstance(FrontendInstanceRegistration registration) {
         Objects.requireNonNull(registration, "registration must not be null");
-        registerInstance(registration, "/frontend/byId/{id}/instances", "frontend");
+        registerInstance(registration, "/frontend/instances", "frontend");
     }
 
-    private void registerInstance(ResourceInstanceRegistration<?> registration, String path, String resourceTypeName) {
-        LOGGER.info("Registering {} instance of [{}] with version [{}] and client URI [{}]", resourceTypeName, registration.getId(), registration.getVersion(), registration.getClientUri());
-        var id = registration.getId();
-        var uri = uriBuilder().path(path).build(id);
+    private void registerInstance(ResourceInstanceRegistration<?, ?> registration, String path, String resourceTypeName) {
+        LOGGER.info("Registering {} instance {}", resourceTypeName, registration.getDescriptor());
+        var stopWatch = new StopWatch();
+        stopWatch.start();
+        var uri = uriBuilder().path(path).build().toUri();
         try {
-            var result = restTemplate.postForEntity(uri, registration, Void.class);
-            switch (result.getStatusCode()) {
-                case OK:
-                case NO_CONTENT:
-                case CREATED:
-                    return;
-                default:
-                    throw new UnexpectedResponseException(result.getStatusCode());
-            }
+            restTemplate.postForEntity(uri, registration, Void.class);
+            stopWatch.stop();
+            LOGGER.info("Registered {} in {} ms", registration.getDescriptor(), stopWatch.getLastTaskTimeMillis());
         } catch (HttpStatusCodeException ex) {
             if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NoSuchResourceException(String.format("A %s with ID %s was not found on the server", resourceTypeName, id));
+                throw new NoSuchResourceException(String.format("A %s with ID %s was not found on the server", resourceTypeName, registration.getDescriptor().getId()));
             } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
                 throw new InvalidSignatureException(String.format("The %s instance registration signature was not accepted by the server", resourceTypeName));
             } else {

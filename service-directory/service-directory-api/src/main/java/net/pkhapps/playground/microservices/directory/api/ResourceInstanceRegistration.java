@@ -3,7 +3,7 @@ package net.pkhapps.playground.microservices.directory.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.net.URI;
+import java.io.Serializable;
 import java.security.*;
 import java.util.Base64;
 import java.util.Objects;
@@ -14,10 +14,12 @@ import java.util.Objects;
  *
  * @param <ID> the resource ID type.
  */
-public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceDescriptor<ID> {
+public abstract class ResourceInstanceRegistration<ID, RID extends ResourceInstanceDescriptor<ID>> implements Serializable {
 
     private static final String DEFAULT_SIGNATURE_ALGORITHM = "SHA256withRSA";
 
+    @JsonProperty
+    private final RID descriptor;
     @JsonProperty
     private final String algorithm;
     @JsonProperty
@@ -30,8 +32,8 @@ public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceD
      * @param privateKey the private key to use when creating the digital signature. The private key will not be stored
      *                   anywhere.
      */
-    public ResourceInstanceRegistration(ResourceInstanceDescriptor<ID> descriptor, PrivateKey privateKey) {
-        super(descriptor);
+    public ResourceInstanceRegistration(RID descriptor, PrivateKey privateKey) {
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor must not be null");
         this.algorithm = DEFAULT_SIGNATURE_ALGORITHM;
 
         try {
@@ -48,13 +50,10 @@ public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceD
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    protected ResourceInstanceRegistration(@JsonProperty(value = "id", required = true) ID id,
-                                           @JsonProperty(value = "version", required = true) Version version,
-                                           @JsonProperty(value = "clientUri", required = true) URI clientUri,
-                                           @JsonProperty(value = "pingUri", required = true) URI pingUri,
+    protected ResourceInstanceRegistration(@JsonProperty(value = "descriptor", required = true) RID descriptor,
                                            @JsonProperty(value = "algorithm", required = true) String algorithm,
                                            @JsonProperty(value = "signature", required = true) String signature) {
-        super(id, version, clientUri, pingUri);
+        this.descriptor = descriptor;
         this.algorithm = algorithm;
         this.signature = signature;
     }
@@ -78,6 +77,13 @@ public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceD
     }
 
     /**
+     * Returns the descriptor of the instance being registered.
+     */
+    public RID getDescriptor() {
+        return descriptor;
+    }
+
+    /**
      * Checks whether the provided {@link #getSignature() signature} is valid. The signature is valid if the
      * value of this registration has not changed and the public key corresponds to the private key that was used
      * to create the signature in the first place.
@@ -98,10 +104,10 @@ public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceD
     }
 
     private void updateSignature(Signature signature) throws SignatureException {
-        signature.update(getId().toString().getBytes());
-        signature.update(getVersion().toString().getBytes());
-        signature.update(getClientUri().toString().getBytes());
-        signature.update(getPingUri().toString().getBytes());
+        signature.update(descriptor.getId().toString().getBytes());
+        signature.update(descriptor.getVersion().toString().getBytes());
+        signature.update(descriptor.getClientUri().toString().getBytes());
+        signature.update(descriptor.getPingUri().toString().getBytes());
         signature.update(algorithm.getBytes());
     }
 
@@ -109,14 +115,14 @@ public abstract class ResourceInstanceRegistration<ID> extends ResourceInstanceD
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ResourceInstanceRegistration<?> that = (ResourceInstanceRegistration<?>) o;
-        return Objects.equals(algorithm, that.algorithm) &&
-                Objects.equals(signature, that.signature);
+        var that = (ResourceInstanceRegistration<?, ?>) o;
+        return descriptor.equals(that.descriptor) &&
+                algorithm.equals(that.algorithm) &&
+                signature.equals(that.signature);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), algorithm, signature);
+        return Objects.hash(descriptor, algorithm, signature);
     }
 }

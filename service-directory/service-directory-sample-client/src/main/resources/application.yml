@@ -1,0 +1,10 @@
+server:
+  port: 8100
+
+service-directory:
+  client:
+    uri: http://localhost:9999/
+logging:
+  level:
+    net.pkhapps: DEBUG
+

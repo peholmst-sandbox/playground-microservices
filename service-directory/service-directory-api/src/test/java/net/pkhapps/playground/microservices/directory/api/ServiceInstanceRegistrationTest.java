@@ -25,7 +25,7 @@ public class ServiceInstanceRegistrationTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         registration = new ServiceInstanceRegistration(
                 new ServiceInstanceDescriptor(new ServiceId("myservice"),
                         new Version("v1"),
@@ -41,9 +41,11 @@ public class ServiceInstanceRegistrationTest {
 
     @Test
     public void verifySignature_alterRegistrationData_signatureInvalid() {
-        var alteredRegistration = new ServiceInstanceRegistration(registration.getId(), registration.getVersion(),
+        var alteredRegistration = new ServiceInstanceRegistration(new ServiceInstanceDescriptor(
+                registration.getDescriptor().getId(),
+                registration.getDescriptor().getVersion(),
                 URI.create("http://myservice.evil.corp/api/v1"),
-                registration.getPingUri(), registration.getAlgorithm(), registration.getSignature());
+                registration.getDescriptor().getPingUri()), registration.getAlgorithm(), registration.getSignature());
         assertThat(alteredRegistration.verifySignature(KEY_PAIR.getPublic())).isFalse();
     }
 

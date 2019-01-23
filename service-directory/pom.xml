@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>microservices-master</artifactId>
+        <groupId>net.pkhapps.playground.microservices</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.pkhapps.playground.microservices.directory</groupId>
+    <artifactId>service-directory-master</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>service-directory-api</module>
+        <module>service-directory-client</module>
+        <module>service-directory-server</module>
+        <module>service-directory-sample-client</module>
+    </modules>
+</project>

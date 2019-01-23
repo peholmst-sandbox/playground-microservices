@@ -3,7 +3,6 @@ package net.pkhapps.playground.microservices.directory.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.net.URI;
 import java.security.PrivateKey;
 
 /**
@@ -11,7 +10,7 @@ import java.security.PrivateKey;
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */
-public final class FrontendInstanceRegistration extends ResourceInstanceRegistration<FrontendId> {
+public final class FrontendInstanceRegistration extends ResourceInstanceRegistration<FrontendId, FrontendInstanceDescriptor> {
 
     /**
      * Creates a new frontend instance registration.
@@ -28,12 +27,9 @@ public final class FrontendInstanceRegistration extends ResourceInstanceRegistra
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    FrontendInstanceRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
-                                 @JsonProperty(value = "version", required = true) Version version,
-                                 @JsonProperty(value = "clientUri", required = true) URI clientUri,
-                                 @JsonProperty(value = "pingUri", required = true) URI pingUri,
+    FrontendInstanceRegistration(@JsonProperty(value = "descriptor", required = true) FrontendInstanceDescriptor descriptor,
                                  @JsonProperty(value = "algorithm", required = true) String algorithm,
                                  @JsonProperty(value = "signature", required = true) String signature) {
-        super(id, version, clientUri, pingUri, algorithm, signature);
+        super(descriptor, algorithm, signature);
     }
 }

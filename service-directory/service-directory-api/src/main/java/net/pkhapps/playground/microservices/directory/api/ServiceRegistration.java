@@ -2,9 +2,7 @@ package net.pkhapps.playground.microservices.directory.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.Nullable;
 
-import java.net.URI;
 import java.security.PublicKey;
 
 /**
@@ -12,7 +10,7 @@ import java.security.PublicKey;
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */
-public final class ServiceRegistration extends ResourceRegistration<ServiceId> {
+public final class ServiceRegistration extends ResourceRegistration<ServiceId, ServiceDescriptor> {
 
     /**
      * Creates a new service registration.
@@ -28,12 +26,9 @@ public final class ServiceRegistration extends ResourceRegistration<ServiceId> {
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    ServiceRegistration(@JsonProperty(value = "id", required = true) ServiceId id,
-                        @JsonProperty(value = "name", required = true) String name,
-                        @JsonProperty(value = "description") @Nullable String description,
-                        @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+    ServiceRegistration(@JsonProperty(value = "descriptor", required = true) ServiceDescriptor descriptor,
                         @JsonProperty(value = "algorithm", required = true) String algorithm,
                         @JsonProperty(value = "publicKey", required = true) String publicKey) {
-        super(id, name, description, iconUri, algorithm, publicKey);
+        super(descriptor, algorithm, publicKey);
     }
 }

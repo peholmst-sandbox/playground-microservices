@@ -90,12 +90,10 @@ class ServiceDirectoryCache {
     }
 
     void updateServiceStatus(Stream<ServiceStatus> serviceStatus) {
-        LOGGER.info("Updating cache of services");
         serviceCache.updateStatus(serviceStatus);
     }
 
     void updateFrontendStatus(Stream<FrontendStatus> frontendStatus) {
-        LOGGER.info("Updating cache of frontends");
         frontendCache.updateStatus(frontendStatus);
     }
 

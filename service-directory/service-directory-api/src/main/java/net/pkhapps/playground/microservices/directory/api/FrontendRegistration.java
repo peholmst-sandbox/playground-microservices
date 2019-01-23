@@ -2,9 +2,7 @@ package net.pkhapps.playground.microservices.directory.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.Nullable;
 
-import java.net.URI;
 import java.security.PublicKey;
 
 /**
@@ -14,7 +12,7 @@ import java.security.PublicKey;
  *
  * @see FrontendInstanceRegistration
  */
-public final class FrontendRegistration extends ResourceRegistration<FrontendId> {
+public final class FrontendRegistration extends ResourceRegistration<FrontendId, FrontendDescriptor> {
 
     /**
      * Creates a new frontend registration.
@@ -30,12 +28,9 @@ public final class FrontendRegistration extends ResourceRegistration<FrontendId>
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    FrontendRegistration(@JsonProperty(value = "id", required = true) FrontendId id,
-                         @JsonProperty(value = "name", required = true) String name,
-                         @JsonProperty(value = "description") @Nullable String description,
-                         @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+    FrontendRegistration(@JsonProperty(value = "descriptor", required = true) FrontendDescriptor descriptor,
                          @JsonProperty(value = "algorithm", required = true) String algorithm,
                          @JsonProperty(value = "publicKey", required = true) String publicKey) {
-        super(id, name, description, iconUri, algorithm, publicKey);
+        super(descriptor, algorithm, publicKey);
     }
 }

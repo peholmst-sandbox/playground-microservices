@@ -48,19 +48,6 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param origin the resource descriptor to copy from.
-     */
-    protected ResourceDescriptor(ResourceDescriptor<ID> origin) {
-        Objects.requireNonNull(origin, "origin must not be null");
-        this.id = origin.id;
-        this.name = origin.name;
-        this.description = origin.description;
-        this.iconUri = origin.iconUri;
-    }
-
-    /**
      * Returns the ID of the resource.
      */
     public final ID getId() {
@@ -104,5 +91,10 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, iconUri);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(id: [%s], name: [%s])", getClass().getSimpleName(), id, name);
     }
 }

@@ -43,19 +43,6 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param origin the resource instance descriptor to copy from.
-     */
-    protected ResourceInstanceDescriptor(ResourceInstanceDescriptor<ID> origin) {
-        Objects.requireNonNull(origin, "origin must not be null");
-        this.id = origin.id;
-        this.version = origin.version;
-        this.clientUri = origin.clientUri;
-        this.pingUri = origin.pingUri;
-    }
-
-    /**
      * Returns the ID of the resource. Please note that this ID does not identify an individual instance but the
      * resource that the instance "implements". The {@link #getClientUri() client URI} should be enough to uniquely
      * identify an instance but to be on the safe side, it is recommended to use a combination of resource ID, version
@@ -103,5 +90,11 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, version, clientUri, pingUri);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(id: [%s], version: [%s], clientUri: [%s])", getClass().getSimpleName(),
+                id, version, clientUri);
     }
 }

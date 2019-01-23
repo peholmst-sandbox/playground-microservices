@@ -1,0 +1,9 @@
+server:
+  port: 9999
+
+spring:
+  datasource:
+    url: jdbc:h2:~/playground-microservices-service-directory
+  jpa:
+    open-in-view: false
+

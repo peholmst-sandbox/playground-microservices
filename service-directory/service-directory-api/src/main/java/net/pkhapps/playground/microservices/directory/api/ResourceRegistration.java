@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.Nullable;
 
-import java.net.URI;
+import java.io.Serializable;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -22,8 +21,10 @@ import java.util.Objects;
  * @param <ID> the resource ID type.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
+public abstract class ResourceRegistration<ID, RD extends ResourceDescriptor<ID>> implements Serializable {
 
+    @JsonProperty
+    private final RD descriptor;
     @JsonProperty
     private final String algorithm;
     @JsonProperty
@@ -37,8 +38,8 @@ public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
      * @param descriptor the resource descriptor.
      * @param publicKey  the public key of the resource. The public key must support {@link PublicKey#getEncoded() encoding}.
      */
-    public ResourceRegistration(ResourceDescriptor<ID> descriptor, PublicKey publicKey) {
-        super(descriptor);
+    public ResourceRegistration(RD descriptor, PublicKey publicKey) {
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor must not be null");
         Objects.requireNonNull(publicKey, "publicKey must not be null");
         this.algorithm = publicKey.getAlgorithm();
         this.publicKey = Base64.getEncoder().encodeToString(Objects.requireNonNull(publicKey.getEncoded(),
@@ -50,13 +51,10 @@ public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
      * Constructor used by Jackson and unit tests only. Clients should not use directly.
      */
     @JsonCreator
-    protected ResourceRegistration(@JsonProperty(value = "id", required = true) ID id,
-                                   @JsonProperty(value = "name", required = true) String name,
-                                   @JsonProperty(value = "description") @Nullable String description,
-                                   @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+    protected ResourceRegistration(@JsonProperty(value = "descriptor", required = true) RD descriptor,
                                    @JsonProperty(value = "algorithm", required = true) String algorithm,
                                    @JsonProperty(value = "publicKey", required = true) String publicKey) {
-        super(id, name, description, iconUri);
+        this.descriptor = descriptor;
         this.algorithm = algorithm;
         this.publicKey = publicKey;
     }
@@ -78,18 +76,25 @@ public abstract class ResourceRegistration<ID> extends ResourceDescriptor<ID> {
         }
     }
 
+    /**
+     * Returns the descriptor of the resource that is being registered.
+     */
+    public RD getDescriptor() {
+        return descriptor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ResourceRegistration<?> that = (ResourceRegistration<?>) o;
-        return Objects.equals(algorithm, that.algorithm) &&
-                Objects.equals(publicKey, that.publicKey);
+        var that = (ResourceRegistration<?, ?>) o;
+        return descriptor.equals(that.descriptor) &&
+                algorithm.equals(that.algorithm) &&
+                publicKey.equals(that.publicKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), algorithm, publicKey);
+        return Objects.hash(descriptor, algorithm, publicKey);
     }
 }
