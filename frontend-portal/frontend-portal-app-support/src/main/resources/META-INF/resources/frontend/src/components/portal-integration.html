@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="portal-integration">
+    <template>
+    </template>
+
+    <script>
+        class PortalIntegration extends Polymer.Element {
+            static get is() {
+                return 'portal-integration';
+            }
+
+            // TODO All postMessage should have the real origin of the portal server instead of '*'
+
+            navigateTo(frontend, version, parameters = null) {
+                if (window.parent) {
+                    console.log(`Navigating to ${frontend} ${version} with parameters ${parameters}`);
+                    window.parent.postMessage({
+                        'action': 'navigate',
+                        'data': {
+                            'frontend': frontend,
+                            'version': version,
+                            'parameters': parameters
+                        }
+                    }, "*");
+                } else {
+                    console.log('No parent window to send navigation message to');
+                }
+            }
+
+            forwardMessageTo(frontend, version, message) {
+                if (window.parent) {
+                    console.log(`Forwarding message ${message} to ${frontend} ${version}`);
+                    window.parent.postMessage({
+                        'action': 'forwardMessage',
+                        'data': {
+                            'frontend': frontend,
+                            'version': version,
+                            'message': message
+                        }
+                    }, "*");
+                }
+            }
+
+            // TODO Notify server of something. For this, the portal integration needs an identifier that the portal uses for a particular tab.
+        }
+
+        customElements.define(PortalIntegration.is, PortalIntegration);
+    </script>
+</dom-module>

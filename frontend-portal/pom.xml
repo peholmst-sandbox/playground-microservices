@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>microservices-master</artifactId>
+        <groupId>net.pkhapps.playground.microservices</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.pkhapps.playground.microservices.portal</groupId>
+    <artifactId>frontend-portal-master</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>frontend-portal-server</module>
+        <module>frontend-portal-sample-app1</module>
+        <module>frontend-portal-sample-app2</module>
+        <module>frontend-portal-app-support</module>
+    </modules>
+</project>

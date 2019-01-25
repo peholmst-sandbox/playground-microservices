@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
-import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,13 +50,13 @@ class ServiceDirectoryImpl implements ServiceDirectory, DisposableBean {
     }
 
     @Override
-    public Optional<URI> getClientUri(ServiceId serviceId, Version version) {
-        return cache.getClientUri(serviceId, version);
+    public Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId, Version version) {
+        return cache.getInstance(serviceId, version);
     }
 
     @Override
-    public Optional<URI> getClientUri(FrontendId frontendId, Version version) {
-        return cache.getClientUri(frontendId, version);
+    public Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId, Version version) {
+        return cache.getInstance(frontendId, version);
     }
 
     @Override

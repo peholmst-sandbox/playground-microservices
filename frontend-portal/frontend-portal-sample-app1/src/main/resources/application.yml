@@ -1,0 +1,6 @@
+server:
+  port: 8200
+
+service-directory:
+  client:
+    uri: http://localhost:9999/

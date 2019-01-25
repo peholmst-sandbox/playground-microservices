@@ -18,9 +18,23 @@
 
     <properties>
         <java.version>11</java.version>
+        <vaadin.version>12.0.4</vaadin.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <version>${vaadin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>service-directory</module>
+        <module>frontend-portal</module>
     </modules>
 </project>

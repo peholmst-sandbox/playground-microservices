@@ -35,6 +35,40 @@ public interface ServiceDirectory {
     Stream<FrontendInstanceDescriptor> getInstances(FrontendId frontendId);
 
     /**
+     * Returns all registered service versions.
+     */
+    default Stream<Version> getVersions(ServiceId serviceId) {
+        return getInstances(serviceId).map(ServiceInstanceDescriptor::getVersion).distinct();
+    }
+
+    /**
+     * Returns all registered frontend versions.
+     */
+    default Stream<Version> getVersions(FrontendId frontendId) {
+        return getInstances(frontendId).map(FrontendInstanceDescriptor::getVersion).distinct();
+    }
+
+    /**
+     * Returns the descriptor of some instance of the specified service. This method is intended to be used by clients
+     * that want to interact with the service. The implementation may decide which instance to return if there are more
+     * than one to choose from.
+     *
+     * @param serviceId the ID of the service.
+     * @param version   the version of the service instance.
+     */
+    Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId, Version version);
+
+    /**
+     * Returns the descriptor of some instance of the specified frontend. This method is intended to be used by clients
+     * that want to interact with the frontend. The implementation may decide which instance to return if there are more
+     * than one to choose from.
+     *
+     * @param frontendId the ID of the frontend.
+     * @param version    the version of the frontend instance.
+     */
+    Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId, Version version);
+
+    /**
      * Returns the client URI of some instance of the specified service. This method is intended to be used by clients
      * that want to interact with the service. The implementation may decide which instance to return if there are more
      * than one to choose from.
@@ -42,7 +76,9 @@ public interface ServiceDirectory {
      * @param serviceId the ID of the service.
      * @param version   the version of the service instance.
      */
-    Optional<URI> getClientUri(ServiceId serviceId, Version version);
+    default Optional<URI> getClientUri(ServiceId serviceId, Version version) {
+        return getInstance(serviceId, version).map(ServiceInstanceDescriptor::getClientUri);
+    }
 
     /**
      * Returns the client URI of some instance of the specified frontend. This method is intended to be used by clients
@@ -52,7 +88,9 @@ public interface ServiceDirectory {
      * @param frontendId the ID of the frontend.
      * @param version    the version of the frontend instance.
      */
-    Optional<URI> getClientUri(FrontendId frontendId, Version version);
+    default Optional<URI> getClientUri(FrontendId frontendId, Version version) {
+        return getInstance(frontendId, version).map(FrontendInstanceDescriptor::getClientUri);
+    }
 
     /**
      * Returns the status of the specified service.

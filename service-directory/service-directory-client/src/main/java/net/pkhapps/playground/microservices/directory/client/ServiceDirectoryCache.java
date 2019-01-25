@@ -59,17 +59,17 @@ class ServiceDirectoryCache {
             return Optional.ofNullable(statusMap.get(resourceId));
         }
 
-        Optional<URI> getClientUri(ID resourceId, Version version) {
-            return getStatus(resourceId).flatMap(status -> getClientUri(version, status));
+        Optional<RID> getInstance(ID resourceId, Version version) {
+            return getStatus(resourceId).flatMap(status -> getInstance(version, status));
         }
 
-        private Optional<URI> getClientUri(Version version, RS resourceStatus) {
+        private Optional<RID> getInstance(Version version, RS resourceStatus) {
             // TODO In the future, take the load into account as well.
-            var uri = resourceStatus.getInstances().filter(status -> isUp(status) && hasVersion(version, status))
+            var instance = resourceStatus.getInstances().filter(status -> isUp(status) && hasVersion(version, status))
                     .min(Comparator.comparing(status -> getCount(status.getDescriptor().getClientUri())))
-                    .map(status -> status.getDescriptor().getClientUri());
-            uri.ifPresent(this::incCount);
-            return uri;
+                    .map(ResourceInstanceStatus::getDescriptor);
+            instance.map(ResourceInstanceDescriptor::getClientUri).ifPresent(this::incCount);
+            return instance;
         }
 
         private long getCount(URI clientUri) {
@@ -121,11 +121,11 @@ class ServiceDirectoryCache {
         return frontendCache.getStatus(frontendId);
     }
 
-    Optional<URI> getClientUri(ServiceId serviceId, Version version) {
-        return serviceCache.getClientUri(serviceId, version);
+    Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId, Version version) {
+        return serviceCache.getInstance(serviceId, version);
     }
 
-    Optional<URI> getClientUri(FrontendId frontendId, Version version) {
-        return frontendCache.getClientUri(frontendId, version);
+    Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId, Version version) {
+        return frontendCache.getInstance(frontendId, version);
     }
 }

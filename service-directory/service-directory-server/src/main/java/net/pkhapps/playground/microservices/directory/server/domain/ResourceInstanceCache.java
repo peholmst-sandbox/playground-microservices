@@ -160,7 +160,9 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
 
         private void recreateStatus() {
             if (status == null || status.getState() != state || !status.getLastSeen().equals(lastSeen)) {
-                logger.info("Instance with id: [{}], version: [{}], clientUri: [{}] is {}", instance.getId(), instance.getVersion(), instance.getClientUri(), state);
+                if (status == null || status.getState() != state) {
+                    logger.info("Instance with id: [{}], version: [{}], clientUri: [{}] is {}", instance.getId(), instance.getVersion(), instance.getClientUri(), state);
+                }
                 status = createStatus(instance, state, lastSeen);
             }
         }
