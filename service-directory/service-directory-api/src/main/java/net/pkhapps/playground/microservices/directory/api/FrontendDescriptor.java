@@ -32,4 +32,14 @@ public final class FrontendDescriptor extends ResourceDescriptor<FrontendId> {
                               @JsonProperty(value = "documentationUri") @Nullable URI documentationUri) {
         super(id, name, description, iconUri, documentationUri);
     }
+
+    /**
+     * Creates a new frontend descriptor.
+     *
+     * @param id   the ID of the frontend.
+     * @param name the human readable name of the frontend.
+     */
+    public FrontendDescriptor(FrontendId id, String name) {
+        this(id, name, null, null, null);
+    }
 }

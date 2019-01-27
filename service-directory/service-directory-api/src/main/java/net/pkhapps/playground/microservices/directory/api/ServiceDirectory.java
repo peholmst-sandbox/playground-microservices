@@ -1,6 +1,7 @@
 package net.pkhapps.playground.microservices.directory.api;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -21,6 +22,26 @@ public interface ServiceDirectory {
     Stream<FrontendDescriptor> getFrontends();
 
     /**
+     * Returns the descriptor for the specified service ID.
+     *
+     * @param serviceId the ID of the service.
+     */
+    default Optional<ServiceDescriptor> getService(ServiceId serviceId) {
+        Objects.requireNonNull(serviceId, "serviceId must not be null");
+        return getServices().filter(d -> d.getId().equals(serviceId)).findAny();
+    }
+
+    /**
+     * Returns the descriptor for the specified frontend ID.
+     *
+     * @param frontendId the ID of the frontend.
+     */
+    default Optional<FrontendDescriptor> getFrontend(FrontendId frontendId) {
+        Objects.requireNonNull(frontendId, "frontendId must not be null");
+        return getFrontends().filter(d -> d.getId().equals(frontendId)).findAny();
+    }
+
+    /**
      * Returns all registered service instances of the specified service.
      *
      * @param serviceId the ID of the service.
@@ -35,28 +56,13 @@ public interface ServiceDirectory {
     Stream<FrontendInstanceDescriptor> getInstances(FrontendId frontendId);
 
     /**
-     * Returns all registered service versions.
-     */
-    default Stream<Version> getVersions(ServiceId serviceId) {
-        return getInstances(serviceId).map(ServiceInstanceDescriptor::getVersion).distinct();
-    }
-
-    /**
-     * Returns all registered frontend versions.
-     */
-    default Stream<Version> getVersions(FrontendId frontendId) {
-        return getInstances(frontendId).map(FrontendInstanceDescriptor::getVersion).distinct();
-    }
-
-    /**
      * Returns the descriptor of some instance of the specified service. This method is intended to be used by clients
      * that want to interact with the service. The implementation may decide which instance to return if there are more
      * than one to choose from.
      *
      * @param serviceId the ID of the service.
-     * @param version   the version of the service instance.
      */
-    Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId, Version version);
+    Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId);
 
     /**
      * Returns the descriptor of some instance of the specified frontend. This method is intended to be used by clients
@@ -64,9 +70,8 @@ public interface ServiceDirectory {
      * than one to choose from.
      *
      * @param frontendId the ID of the frontend.
-     * @param version    the version of the frontend instance.
      */
-    Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId, Version version);
+    Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId);
 
     /**
      * Returns the client URI of some instance of the specified service. This method is intended to be used by clients
@@ -74,10 +79,9 @@ public interface ServiceDirectory {
      * than one to choose from.
      *
      * @param serviceId the ID of the service.
-     * @param version   the version of the service instance.
      */
-    default Optional<URI> getClientUri(ServiceId serviceId, Version version) {
-        return getInstance(serviceId, version).map(ServiceInstanceDescriptor::getClientUri);
+    default Optional<URI> getClientUri(ServiceId serviceId) {
+        return getInstance(serviceId).map(ServiceInstanceDescriptor::getClientUri);
     }
 
     /**
@@ -86,10 +90,9 @@ public interface ServiceDirectory {
      * than one to choose from.
      *
      * @param frontendId the ID of the frontend.
-     * @param version    the version of the frontend instance.
      */
-    default Optional<URI> getClientUri(FrontendId frontendId, Version version) {
-        return getInstance(frontendId, version).map(FrontendInstanceDescriptor::getClientUri);
+    default Optional<URI> getClientUri(FrontendId frontendId) {
+        return getInstance(frontendId).map(FrontendInstanceDescriptor::getClientUri);
     }
 
     /**

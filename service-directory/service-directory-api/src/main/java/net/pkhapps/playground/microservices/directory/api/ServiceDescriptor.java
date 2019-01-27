@@ -16,16 +16,28 @@ public final class ServiceDescriptor extends ResourceDescriptor<ServiceId> {
     /**
      * Creates a new service descriptor.
      *
-     * @param id          the ID of the service.
-     * @param name        the human readable name of the service.
-     * @param description an optional human readable description of the service.
-     * @param iconUri     an optional URI of an icon for the service.
+     * @param id               the ID of the service.
+     * @param name             the human readable name of the service.
+     * @param description      an optional human readable description of the service.
+     * @param iconUri          an optional URI of an icon for the service.
+     * @param documentationUri an optional URI of the documentation for this service.
      */
     @JsonCreator
     public ServiceDescriptor(@JsonProperty(value = "id", required = true) ServiceId id,
                              @JsonProperty(value = "name", required = true) String name,
                              @JsonProperty(value = "description") @Nullable String description,
-                             @JsonProperty(value = "iconUri") @Nullable URI iconUri) {
-        super(id, name, description, iconUri);
+                             @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+                             @JsonProperty(value = "documentationUri") @Nullable URI documentationUri) {
+        super(id, name, description, iconUri, documentationUri);
+    }
+
+    /**
+     * Creates a new service descriptor.
+     *
+     * @param id   the ID of the service.
+     * @param name the human readable name of the service.
+     */
+    public ServiceDescriptor(ServiceId id, String name) {
+        this(id, name, null, null, null);
     }
 }

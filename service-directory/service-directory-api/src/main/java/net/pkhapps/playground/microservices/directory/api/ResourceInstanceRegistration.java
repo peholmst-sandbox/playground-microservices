@@ -39,7 +39,8 @@ public abstract class ResourceInstanceRegistration<ID, RID extends ResourceInsta
         try {
             var signature = Signature.getInstance(this.algorithm);
             signature.initSign(Objects.requireNonNull(privateKey, "privateKey must not be null"));
-            updateSignature(signature);
+            signature.update(algorithm.getBytes());
+            updateSignature(signature, descriptor);
             this.signature = Base64.getEncoder().encodeToString(signature.sign());
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException ex) {
             throw new IllegalStateException("Could not create digital signature", ex);
@@ -96,19 +97,25 @@ public abstract class ResourceInstanceRegistration<ID, RID extends ResourceInsta
         try {
             var signature = Signature.getInstance(algorithm);
             signature.initVerify(publicKey);
-            updateSignature(signature);
+            signature.update(algorithm.getBytes());
+            updateSignature(signature, descriptor);
             return signature.verify(Base64.getDecoder().decode(this.signature));
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException ex) {
             throw new IllegalStateException("Could not verify signature", ex);
         }
     }
 
-    private void updateSignature(Signature signature) throws SignatureException {
+    /**
+     * Updates the digital signature with data from the given resource instance descriptor.
+     *
+     * @param signature  the signature to update.
+     * @param descriptor the descriptor to read data from.
+     * @throws SignatureException if there is an error updating the signature (should never happen).
+     */
+    protected void updateSignature(Signature signature, RID descriptor) throws SignatureException {
         signature.update(descriptor.getResourceId().toString().getBytes());
-        signature.update(descriptor.getVersion().toString().getBytes());
         signature.update(descriptor.getClientUri().toString().getBytes());
         signature.update(descriptor.getPingUri().toString().getBytes());
-        signature.update(algorithm.getBytes());
     }
 
     @Override

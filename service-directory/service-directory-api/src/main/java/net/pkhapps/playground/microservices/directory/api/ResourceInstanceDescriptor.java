@@ -1,6 +1,7 @@
 package net.pkhapps.playground.microservices.directory.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -38,9 +39,15 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
     }
 
     /**
+     * Returns the ID of this resource instance.
+     */
+    @JsonIgnore
+    public final ResourceInstanceId<ID> getId() {
+        return new ResourceInstanceId<>(resourceId, clientUri);
+    }
+
+    /**
      * Returns the ID of the resource that the instance "implements".
-     *
-     * @see #getClientUri()
      */
     public final ID getResourceId() {
         return resourceId;
