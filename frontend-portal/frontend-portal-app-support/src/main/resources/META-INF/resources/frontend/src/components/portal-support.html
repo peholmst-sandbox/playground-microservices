@@ -1,13 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
-<dom-module resourceId="portal-integration">
+<dom-module id="portal-support">
     <template>
     </template>
 
     <script>
-        class PortalIntegration extends Polymer.Element {
+        class PortalSupport extends Polymer.Element {
             static get is() {
-                return 'portal-integration';
+                return 'portal-support';
             }
 
             // TODO All postMessage should have the real origin of the portal server instead of '*'
@@ -45,6 +45,6 @@
             // TODO Notify server of something. For this, the portal integration needs an identifier that the portal uses for a particular tab.
         }
 
-        customElements.define(PortalIntegration.is, PortalIntegration);
+        customElements.define(PortalSupport.is, PortalSupport);
     </script>
 </dom-module>

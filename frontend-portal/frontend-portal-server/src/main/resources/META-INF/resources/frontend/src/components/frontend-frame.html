@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="frontend-frame">
+    <template>
+        <style>
+            #frame {
+                border: 0;
+                outline: 0;
+                flex-grow: 1;
+            }
+        </style>
+        <iframe id="frame" sandbox></iframe>
+    </template>
+
+    <script>
+        class FrontendFrame extends Polymer.Element {
+            static get is() {
+                return 'frontend-frame';
+            }
+
+            ready() {
+                super.ready();
+                this.$.frame.onload = () => {
+                    this.$.frame.contentWindow.postMessage({
+                        'type': 'init-frontend-frame',
+                        'uuid': this.uuid
+                    }, this.origin);
+                };
+            }
+
+            initialize(clientUri, origin, uuid) {
+                this.origin = origin;
+                this.uuid = uuid;
+
+                this.$.frame.src = clientUri;
+            }
+
+            postMessage(sender, message) {
+                this.$.frame.contentWindow.postMessage({
+                    'type': 'message-from-other-frontend',
+                    'sender': sender,
+                    'message': message
+                }, this.origin);
+            }
+        }
+
+        customElements.define(FrontendFrame.is, FrontendFrame);
+    </script>
+</dom-module>

@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="frontend-listener">
+    <template>
+    </template>
+
+    <script>
+        class FrontendListener extends Polymer.Element {
+            static get is() {
+                return 'frontend-listener';
+            }
+
+            ready() {
+                super.ready();
+                window.addEventListener('message', this._onMessage.bind(this), false);
+            }
+
+            _onMessage(event) {
+                let origin = event.origin;
+                let data = event.data;
+                let type = data.type || 'unknown';
+
+                switch (type) {
+                    case 'notify-user':
+                        this._onNotifyUser(data, origin);
+                        break;
+                    case 'send-to-frontend':
+                        this._onSendToFrontend(data, origin);
+                        break;
+                    case 'open-frontend':
+                        this._onOpenFrontend(data, origin);
+                        break;
+                    default:
+                        console.log(`Received message of unknown type ${type} from ${origin}, ignoring`);
+                }
+            }
+
+            _onNotifyUser(message, origin) {
+                // TODO Implement me
+            }
+
+            _onSendToFrontend(message, origin) {
+                // TODO Implement me
+            }
+
+            _onOpenFrontend(message, origin) {
+                // TODO Implement me
+            }
+        }
+
+        customElements.define(FrontendListener.is, FrontendListener);
+    </script>
+</dom-module>
