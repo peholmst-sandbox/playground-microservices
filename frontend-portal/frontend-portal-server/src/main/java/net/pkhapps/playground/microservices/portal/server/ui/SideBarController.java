@@ -51,7 +51,7 @@ class SideBarController implements NavigationListener {
 
     @Override
     public void onLeave(FrontendInstanceDescriptor frontend) {
-        if (Objects.equals(selection, frontend.getId())) {
+        if (Objects.equals(selection, frontend.getResourceId())) {
             var item = itemMap.get(selection);
             item.setSelected(false);
             selection = null;
@@ -61,10 +61,10 @@ class SideBarController implements NavigationListener {
     @Override
     public void onEnter(FrontendInstanceDescriptor frontend) {
         itemMap.values().forEach(item -> item.setSelected(false));
-        var item = itemMap.get(frontend.getId());
+        var item = itemMap.get(frontend.getResourceId());
         if (item != null) {
             item.setSelected(true);
-            selection = frontend.getId();
+            selection = frontend.getResourceId();
         }
     }
 }

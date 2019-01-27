@@ -17,7 +17,6 @@ public final class FrontendInstanceDescriptor extends ResourceInstanceDescriptor
      * Creates a new frontend instance descriptor.
      *
      * @param id        the ID of the frontend.
-     * @param version   the version of this frontend instance.
      * @param clientUri the URI that clients use to access this instance.
      * @param pingUri   the URI that the service directory pings to check the health of this instance.
      */

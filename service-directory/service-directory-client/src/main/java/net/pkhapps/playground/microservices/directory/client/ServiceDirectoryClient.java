@@ -127,7 +127,7 @@ class ServiceDirectoryClient {
             LOGGER.info("Registered {} in {} ms", registration.getDescriptor(), stopWatch.getLastTaskTimeMillis());
         } catch (HttpStatusCodeException ex) {
             if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NoSuchResourceException(String.format("A %s with ID %s was not found on the server", resourceTypeName, registration.getDescriptor().getId()));
+                throw new NoSuchResourceException(String.format("A %s with ID %s was not found on the server", resourceTypeName, registration.getDescriptor().getResourceId()));
             } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
                 throw new InvalidSignatureException(String.format("The %s instance registration signature was not accepted by the server", resourceTypeName));
             } else {

@@ -12,6 +12,7 @@ import java.util.Objects;
  * <p>
  * This value object can be serialized to and deserialized from JSON using Jackson.
  */
+@Deprecated
 public final class Version implements Serializable {
 
     @JsonValue

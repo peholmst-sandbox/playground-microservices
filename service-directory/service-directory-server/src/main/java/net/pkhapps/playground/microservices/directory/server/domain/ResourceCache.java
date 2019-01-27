@@ -40,19 +40,19 @@ public abstract class ResourceCache<ID, RD extends ResourceDescriptor<ID>, RID e
     }
 
     public void addInstance(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.addInstance(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.addInstance(instance));
     }
 
     public void removeInstance(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.removeInstance(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.removeInstance(instance));
     }
 
     public void pingSucceeded(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.pingSucceeded(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.pingSucceeded(instance));
     }
 
     public void pingFailed(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.pingFailed(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.pingFailed(instance));
     }
 
     public Stream<RID> getInstances() {

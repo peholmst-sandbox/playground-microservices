@@ -42,7 +42,7 @@ public class ServiceInstanceRegistrationTest {
     @Test
     public void verifySignature_alterRegistrationData_signatureInvalid() {
         var alteredRegistration = new ServiceInstanceRegistration(new ServiceInstanceDescriptor(
-                registration.getDescriptor().getId(),
+                registration.getDescriptor().getResourceId(),
                 registration.getDescriptor().getVersion(),
                 URI.create("http://myservice.evil.corp/api/v1"),
                 registration.getDescriptor().getPingUri()), registration.getAlgorithm(), registration.getSignature());

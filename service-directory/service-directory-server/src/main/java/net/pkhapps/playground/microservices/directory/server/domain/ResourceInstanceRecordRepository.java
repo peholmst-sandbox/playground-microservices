@@ -13,6 +13,6 @@ public interface ResourceInstanceRecordRepository<ID, T extends ResourceInstance
     Optional<T> findByResourceIdAndVersionAndClientUri(ID resourceId, Version version, String clientUri);
 
     default <D extends ResourceInstanceDescriptor<ID>> Optional<T> findByDescriptor(D descriptor) {
-        return findByResourceIdAndVersionAndClientUri(descriptor.getId(), descriptor.getVersion(), descriptor.getClientUri().toString());
+        return findByResourceIdAndVersionAndClientUri(descriptor.getResourceId(), descriptor.getVersion(), descriptor.getClientUri().toString());
     }
 }

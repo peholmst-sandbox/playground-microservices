@@ -80,7 +80,7 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
 
         InstanceId(RID instance) {
             Objects.requireNonNull(instance, "instance must not be null");
-            this.resourceId = instance.getId();
+            this.resourceId = instance.getResourceId();
             this.version = instance.getVersion();
             this.clientUri = instance.getClientUri();
         }
@@ -161,7 +161,7 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
         private void recreateStatus() {
             if (status == null || status.getState() != state || !status.getLastSeen().equals(lastSeen)) {
                 if (status == null || status.getState() != state) {
-                    logger.info("Instance with id: [{}], version: [{}], clientUri: [{}] is {}", instance.getId(), instance.getVersion(), instance.getClientUri(), state);
+                    logger.info("Instance with id: [{}], version: [{}], clientUri: [{}] is {}", instance.getResourceId(), instance.getVersion(), instance.getClientUri(), state);
                 }
                 status = createStatus(instance, state, lastSeen);
             }

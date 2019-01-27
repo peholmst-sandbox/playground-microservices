@@ -47,7 +47,7 @@ public abstract class ResourceInstanceRecord<ID, RID extends ResourceInstanceDes
     public void updateRecord(ResourceInstanceRegistration<ID, RID> registration) {
         Objects.requireNonNull(registration, "registration must not be null");
         var descriptor = registration.getDescriptor();
-        this.resourceId = descriptor.getId();
+        this.resourceId = descriptor.getResourceId();
         this.version = descriptor.getVersion();
         this.clientUri = descriptor.getClientUri().toString();
         this.pingUri = descriptor.getPingUri().toString();

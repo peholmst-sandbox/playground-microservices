@@ -33,7 +33,7 @@ public class TabController implements NavigationListener {
     public void onEnter(FrontendInstanceDescriptor frontend) {
         var tab = tabMap.get(frontend);
         if (tab == null) {
-            tab = new Tab(String.format("%s (%s)", frontend.getId(), frontend.getVersion())); // TODO We need the descriptor, not only the ID here.
+            tab = new Tab(String.format("%s (%s)", frontend.getResourceId(), frontend.getVersion())); // TODO We need the descriptor, not only the ID here.
             var closeButton = new Button(new Icon(VaadinIcon.CLOSE));
             closeButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SMALL);
             closeButton.addClickListener(event -> navigationModel.close(frontend));

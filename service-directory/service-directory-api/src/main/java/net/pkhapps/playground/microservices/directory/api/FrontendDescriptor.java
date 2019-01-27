@@ -18,16 +18,18 @@ public final class FrontendDescriptor extends ResourceDescriptor<FrontendId> {
     /**
      * Creates a new frontend descriptor.
      *
-     * @param id          the ID of the frontend.
-     * @param name        the human readable name of the frontend.
-     * @param description an optional human readable description of the frontend.
-     * @param iconUri     an optional URI of an icon for the frontend.
+     * @param id               the ID of the frontend.
+     * @param name             the human readable name of the frontend.
+     * @param description      an optional human readable description of the frontend.
+     * @param iconUri          an optional URI of an icon for the frontend.
+     * @param documentationUri an optional URI of the documentation for this frontend.
      */
     @JsonCreator
     public FrontendDescriptor(@JsonProperty(value = "id", required = true) FrontendId id,
                               @JsonProperty(value = "name", required = true) String name,
                               @JsonProperty(value = "description") @Nullable String description,
-                              @JsonProperty(value = "iconUri") @Nullable URI iconUri) {
-        super(id, name, description, iconUri);
+                              @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+                              @JsonProperty(value = "documentationUri") @Nullable URI documentationUri) {
+        super(id, name, description, iconUri, documentationUri);
     }
 }

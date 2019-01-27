@@ -104,7 +104,7 @@ public abstract class ResourceInstanceRegistration<ID, RID extends ResourceInsta
     }
 
     private void updateSignature(Signature signature) throws SignatureException {
-        signature.update(descriptor.getId().toString().getBytes());
+        signature.update(descriptor.getResourceId().toString().getBytes());
         signature.update(descriptor.getVersion().toString().getBytes());
         signature.update(descriptor.getClientUri().toString().getBytes());
         signature.update(descriptor.getPingUri().toString().getBytes());

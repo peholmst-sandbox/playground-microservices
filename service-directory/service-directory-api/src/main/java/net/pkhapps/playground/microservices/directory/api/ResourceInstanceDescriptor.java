@@ -15,9 +15,7 @@ import java.util.Objects;
 public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
 
     @JsonProperty
-    private final ID id;
-    @JsonProperty
-    private final Version version;
+    private final ID resourceId;
     @JsonProperty
     private final URI clientUri;
     @JsonProperty
@@ -26,37 +24,26 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
     /**
      * Creates a new resource instance descriptor.
      *
-     * @param id        the ID of the resource.
-     * @param version   the version of this resource instance.
-     * @param clientUri the URI that clients use to access this instance.
-     * @param pingUri   the URI that the service directory pings to check the health of this instance.
+     * @param resourceId the ID of the resource.
+     * @param clientUri  the URI that clients use to access this instance.
+     * @param pingUri    the URI that the service directory pings to check the health of this instance.
      */
     @JsonCreator
-    public ResourceInstanceDescriptor(@JsonProperty(value = "id", required = true) ID id,
-                                      @JsonProperty(value = "version", required = true) Version version,
+    public ResourceInstanceDescriptor(@JsonProperty(value = "resourceId", required = true) ID resourceId,
                                       @JsonProperty(value = "clientUri", required = true) URI clientUri,
                                       @JsonProperty(value = "pingUri", required = true) URI pingUri) {
-        this.id = Objects.requireNonNull(id, "id must not be null");
-        this.version = Objects.requireNonNull(version, "version must not be null");
+        this.resourceId = Objects.requireNonNull(resourceId, "resourceId must not be null");
         this.clientUri = Objects.requireNonNull(clientUri, "clientUri must not be null");
         this.pingUri = Objects.requireNonNull(pingUri, "pingUri must not be null");
     }
 
     /**
-     * Returns the ID of the resource. Please note that this ID does not identify an individual instance but the
-     * resource that the instance "implements". The {@link #getClientUri() client URI} should be enough to uniquely
-     * identify an instance but to be on the safe side, it is recommended to use a combination of resource ID, version
-     * and client URI as a unique identifier.
+     * Returns the ID of the resource that the instance "implements".
+     *
+     * @see #getClientUri()
      */
-    public final ID getId() {
-        return id;
-    }
-
-    /**
-     * Returns the version of the resource instance.
-     */
-    public final Version getVersion() {
-        return version;
+    public final ID getResourceId() {
+        return resourceId;
     }
 
     /**
@@ -81,20 +68,19 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResourceInstanceDescriptor<?> that = (ResourceInstanceDescriptor<?>) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(version, that.version) &&
+        return Objects.equals(resourceId, that.resourceId) &&
                 Objects.equals(clientUri, that.clientUri) &&
                 Objects.equals(pingUri, that.pingUri);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, version, clientUri, pingUri);
+        return Objects.hash(resourceId, clientUri, pingUri);
     }
 
     @Override
     public String toString() {
-        return String.format("%s(id: [%s], version: [%s], clientUri: [%s])", getClass().getSimpleName(),
-                id, version, clientUri);
+        return String.format("%s(resourceId: [%s], clientUri: [%s])", getClass().getSimpleName(),
+                resourceId, clientUri);
     }
 }
