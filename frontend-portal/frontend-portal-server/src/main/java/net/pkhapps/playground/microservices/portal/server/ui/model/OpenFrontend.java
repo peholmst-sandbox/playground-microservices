@@ -64,7 +64,7 @@ public class OpenFrontend implements Serializable {
         };
     }
 
-    public Registration addNotificationListener(MessageListener messageListener) {
+    public Registration addNotificationListener(NotificationListener messageListener) {
         // TODO Implement me!
         return () -> {
         };
