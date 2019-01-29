@@ -26,6 +26,15 @@ public class ResourceInstanceId<ID> implements Serializable {
     }
 
     /**
+     * Creates a new {@code ResourceInstanceId}.
+     *
+     * @param descriptor the resource instance for which the ID should be created.
+     */
+    public ResourceInstanceId(ResourceInstanceDescriptor<ID> descriptor) {
+        this(descriptor.getResourceId(), descriptor.getClientUri());
+    }
+
+    /**
      * Returns the ID of the resource that this instance is an instance of.
      */
     public ID getResourceId() {

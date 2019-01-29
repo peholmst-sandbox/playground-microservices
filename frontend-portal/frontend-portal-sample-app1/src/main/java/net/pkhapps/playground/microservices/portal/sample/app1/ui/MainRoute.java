@@ -6,21 +6,22 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
 import net.pkhapps.playground.microservices.directory.api.FrontendId;
-import net.pkhapps.playground.microservices.directory.api.Version;
 import net.pkhapps.playground.microservices.portal.app.support.PortalSupport;
+
+import java.net.URI;
 
 @Route("")
 public class MainRoute extends Div {
 
     public MainRoute() {
         add(new Label("This is sample application 1"));
-        var portalIntegration = new PortalSupport();
-        add(portalIntegration);
+        var portalSupport = new PortalSupport(URI.create("http://localhost:8888"));
+        add(portalSupport);
         add(new Button("Navigate to Sample App 2", event -> {
-            portalIntegration.navigateTo(new FrontendId("sample-app-2"), new Version("1.0"), null);
+            portalSupport.showFrontend(new FrontendId("sample-app-2"));
             var message = Json.createObject();
             message.put("greeting", "hello from application 1");
-            portalIntegration.forwardMessageTo(new FrontendId("sample-app-2"), new Version("1.0"), message);
+            portalSupport.postMessage(new FrontendId("sample-app-2"), message);
         }));
     }
 }

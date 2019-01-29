@@ -3,6 +3,7 @@ package net.pkhapps.playground.microservices.directory.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -71,7 +72,7 @@ public abstract class ResourceInstanceDescriptor<ID> implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResourceInstanceDescriptor<?> that = (ResourceInstanceDescriptor<?>) o;

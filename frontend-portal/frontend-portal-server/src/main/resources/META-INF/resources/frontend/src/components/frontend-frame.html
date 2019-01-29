@@ -9,7 +9,7 @@
                 flex-grow: 1;
             }
         </style>
-        <iframe id="frame" sandbox></iframe>
+        <iframe id="frame" sandbox="allow-scripts allow-pointer-lock allow-forms allow-same-origin"></iframe>
     </template>
 
     <script>
@@ -22,8 +22,8 @@
                 super.ready();
                 this.$.frame.onload = () => {
                     this.$.frame.contentWindow.postMessage({
-                        'type': 'init-frontend-frame',
-                        'uuid': this.uuid
+                        type: 'init-frontend-frame',
+                        uuid: this.uuid
                     }, this.origin);
                 };
             }
@@ -31,15 +31,15 @@
             initialize(clientUri, origin, uuid) {
                 this.origin = origin;
                 this.uuid = uuid;
-
+                console.log(`Initializing frontend frame with origin: '${origin}', clientUri: '${clientUri}', uuid: '${uuid}'`);
                 this.$.frame.src = clientUri;
             }
 
             postMessage(sender, message) {
                 this.$.frame.contentWindow.postMessage({
-                    'type': 'message-from-other-frontend',
-                    'sender': sender,
-                    'message': message
+                    type: 'message-from-other-frontend',
+                    sender: sender,
+                    message: message
                 }, this.origin);
             }
         }

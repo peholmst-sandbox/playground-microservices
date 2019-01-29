@@ -7,7 +7,9 @@ import net.pkhapps.playground.microservices.directory.api.FrontendId;
 import net.pkhapps.playground.microservices.directory.api.FrontendInstanceDescriptor;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -19,6 +21,8 @@ public class OpenFrontend implements Serializable {
     private final FrontendInstanceDescriptor instance;
     private final FrontendDescriptor frontend;
     private final Origin origin;
+    private final Set<MessageListener> messageListeners = new HashSet<>();
+    private final Set<NotificationListener> notificationListeners = new HashSet<>();
 
     public OpenFrontend(FrontendInstanceDescriptor instance, FrontendDescriptor frontend) {
         this.uuid = UUID.randomUUID();
@@ -51,23 +55,23 @@ public class OpenFrontend implements Serializable {
     }
 
     public void notifyUser() {
-        // TODO Implement me!
+        Set.copyOf(notificationListeners).forEach(NotificationListener::onNotification);
     }
 
     public void sendMessage(FrontendId sender, JsonValue message) {
-        // TODO Implement me!
+        Objects.requireNonNull(sender, "sender must not be null");
+        Objects.requireNonNull(message, "message must not be null");
+        Set.copyOf(messageListeners).forEach(listener -> listener.onMessage(sender, message));
     }
 
     public Registration addMessageListener(MessageListener messageListener) {
-        // TODO Implement me!
-        return () -> {
-        };
+        messageListeners.add(Objects.requireNonNull(messageListener, "messageListener must not be null"));
+        return () -> messageListeners.remove(messageListener);
     }
 
-    public Registration addNotificationListener(NotificationListener messageListener) {
-        // TODO Implement me!
-        return () -> {
-        };
+    public Registration addNotificationListener(NotificationListener notificationListener) {
+        notificationListeners.add(Objects.requireNonNull(notificationListener, "notificationListener must not be null"));
+        return () -> notificationListeners.remove(notificationListener);
     }
 
     @FunctionalInterface
@@ -78,5 +82,10 @@ public class OpenFrontend implements Serializable {
     @FunctionalInterface
     public interface NotificationListener extends Serializable {
         void onNotification();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(uuid: [%s], instance: [%s]", getClass().getSimpleName(), uuid, instance);
     }
 }

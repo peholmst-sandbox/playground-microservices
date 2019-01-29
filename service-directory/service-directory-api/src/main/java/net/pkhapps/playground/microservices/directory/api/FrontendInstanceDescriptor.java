@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -45,5 +46,20 @@ public final class FrontendInstanceDescriptor extends ResourceInstanceDescriptor
     @JsonIgnore
     public Optional<URI> getNotificationsUri() {
         return Optional.ofNullable(notificationsUri);
+    }
+
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        var that = (FrontendInstanceDescriptor) o;
+        return Objects.equals(notificationsUri, that.notificationsUri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), notificationsUri);
     }
 }

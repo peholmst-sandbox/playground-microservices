@@ -2,7 +2,6 @@ package net.pkhapps.playground.microservices.directory.server.domain;
 
 import net.pkhapps.playground.microservices.directory.api.ResourceInstanceDescriptor;
 import net.pkhapps.playground.microservices.directory.api.ResourceInstanceRegistration;
-import net.pkhapps.playground.microservices.directory.api.Version;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -20,9 +19,6 @@ public abstract class ResourceInstanceRecord<ID, RID extends ResourceInstanceDes
     @Column(name = "resource_id", nullable = false)
     private ID resourceId;
 
-    @Column(name = "resource_version", nullable = false)
-    private Version version;
-
     @Column(name = "client_uri", nullable = false)
     private String clientUri;
 
@@ -31,10 +27,12 @@ public abstract class ResourceInstanceRecord<ID, RID extends ResourceInstanceDes
 
     @LastModifiedDate
     @Column(name = "last_modified")
+    @Nullable
     private Instant lastModified;
 
     @CreatedDate
     @Column(name = "created")
+    @Nullable
     private Instant created;
 
     protected ResourceInstanceRecord() {
@@ -48,17 +46,12 @@ public abstract class ResourceInstanceRecord<ID, RID extends ResourceInstanceDes
         Objects.requireNonNull(registration, "registration must not be null");
         var descriptor = registration.getDescriptor();
         this.resourceId = descriptor.getResourceId();
-        this.version = descriptor.getVersion();
         this.clientUri = descriptor.getClientUri().toString();
         this.pingUri = descriptor.getPingUri().toString();
     }
 
     public ID getResourceId() {
         return resourceId;
-    }
-
-    public Version getVersion() {
-        return version;
     }
 
     public URI getClientUri() {

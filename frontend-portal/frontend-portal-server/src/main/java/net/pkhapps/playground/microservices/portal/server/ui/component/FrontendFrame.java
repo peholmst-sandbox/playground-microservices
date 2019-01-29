@@ -46,4 +46,12 @@ public class FrontendFrame extends Component {
     private void postMessage(FrontendId sender, JsonValue message) {
         getElement().callFunction("postMessage", sender.toString(), message);
     }
+
+    public void hide() {
+        getElement().getStyle().set("display", "none");
+    }
+
+    public void show() {
+        getElement().getStyle().set("display", null);
+    }
 }

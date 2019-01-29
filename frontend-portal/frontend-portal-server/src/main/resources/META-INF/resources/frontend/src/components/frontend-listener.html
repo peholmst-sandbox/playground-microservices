@@ -36,15 +36,45 @@
             }
 
             _onNotifyUser(message, origin) {
-                // TODO Implement me
+                if (message.sender) {
+                    let uuid = message.sender;
+                    console.log(`Notifying user in tab ${uuid} from origin ${origin}`);
+                    this.dispatchEvent(new CustomEvent('notify-user', {
+                        detail: {
+                            uuid: uuid
+                        }
+                    }));
+                }
             }
 
             _onSendToFrontend(message, origin) {
-                // TODO Implement me
+                if (message.frontend && message.message && message.sender) {
+                    let recipient = message.frontend;
+                    let payload = message.message;
+                    let uuid = message.sender;
+                    console.log(`Sending message to ${recipient} from tab ${uuid}`);
+                    this.dispatchEvent(new CustomEvent('send-to-frontend', {
+                        detail: {
+                            recipient: recipient,
+                            payload: payload,
+                            uuid: uuid
+                        }
+                    }));
+                }
             }
 
             _onOpenFrontend(message, origin) {
-                // TODO Implement me
+                if (message.frontend && message.sender) {
+                    let frontendToOpen = message.frontend;
+                    let uuid = message.sender;
+                    console.log(`Opening frontend ${frontendToOpen} from tab ${uuid}`);
+                    this.dispatchEvent(new CustomEvent('open-frontend', {
+                        detail: {
+                            frontend: frontendToOpen,
+                            uuid: uuid
+                        }
+                    }));
+                }
             }
         }
 

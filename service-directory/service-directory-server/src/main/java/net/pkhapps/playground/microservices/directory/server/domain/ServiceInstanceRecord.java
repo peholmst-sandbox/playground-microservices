@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "service_instances", uniqueConstraints = @UniqueConstraint(columnNames = {"resource_id", "resource_version", "client_uri"}))
+@Table(name = "service_instances", uniqueConstraints = @UniqueConstraint(columnNames = {"resource_id", "client_uri"}))
 public class ServiceInstanceRecord extends ResourceInstanceRecord<ServiceId, ServiceInstanceDescriptor> {
 
     ServiceInstanceRecord() {
@@ -21,6 +21,6 @@ public class ServiceInstanceRecord extends ResourceInstanceRecord<ServiceId, Ser
 
     @Override
     public ServiceInstanceDescriptor toDescriptor() {
-        return new ServiceInstanceDescriptor(getResourceId(), getVersion(), getClientUri(), getPingUri());
+        return new ServiceInstanceDescriptor(getResourceId(), getClientUri(), getPingUri());
     }
 }

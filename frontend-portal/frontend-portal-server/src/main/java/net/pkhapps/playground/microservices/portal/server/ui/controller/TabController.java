@@ -78,6 +78,7 @@ public class TabController implements Serializable {
             this.openFrontend = Objects.requireNonNull(openFrontend, "openFrontend must not be null");
             notificationRegistration = openFrontend.addNotificationListener(this::onNotification);
             tab = new Tab(openFrontend.getFrontend().getName());
+            // TODO Close button
         }
 
         private void onNotification() {

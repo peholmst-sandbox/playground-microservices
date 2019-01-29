@@ -20,8 +20,8 @@ public class SampleClient {
     @PostConstruct
     void registerSomeStuff() throws Exception {
         var keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
-        serviceDirectory.registerService(new ServiceRegistration(new ServiceDescriptor(new ServiceId("customerService"), "Customer Service", null, null), keyPair.getPublic()));
-        serviceDirectory.registerInstance(new ServiceInstanceRegistration(new ServiceInstanceDescriptor(new ServiceId("customerService"), new Version("v1"),
+        serviceDirectory.registerService(new ServiceRegistration(new ServiceDescriptor(new ServiceId("customerService"), "Customer Service", null, null, null), keyPair.getPublic()));
+        serviceDirectory.registerInstance(new ServiceInstanceRegistration(new ServiceInstanceDescriptor(new ServiceId("customerService"),
                 URI.create("http://localhost:8100/api/customers/v1"), URI.create("http://localhost:8100/api/ping")), keyPair.getPrivate()));
     }
 

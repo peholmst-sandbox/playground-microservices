@@ -50,13 +50,13 @@ class ServiceDirectoryImpl implements ServiceDirectory, DisposableBean {
     }
 
     @Override
-    public Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId, Version version) {
-        return cache.getInstance(serviceId, version);
+    public Optional<ServiceInstanceDescriptor> getInstance(ServiceId serviceId) {
+        return cache.getInstance(serviceId);
     }
 
     @Override
-    public Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId, Version version) {
-        return cache.getInstance(frontendId, version);
+    public Optional<FrontendInstanceDescriptor> getInstance(FrontendId frontendId) {
+        return cache.getInstance(frontendId);
     }
 
     @Override

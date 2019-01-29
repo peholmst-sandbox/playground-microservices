@@ -32,8 +32,11 @@ public abstract class ResourceRecord<ID, RD extends ResourceDescriptor<ID>> exte
     @Column(name = "resource_description")
     private String description;
 
-    @Column(name = "documentation_uri")
+    @Column(name = "icon_uri")
     private String iconUri;
+
+    @Column(name = "documentation_uri")
+    private String documentationUri;
 
     @Column(name = "algorithm", nullable = false)
     private String algorithm;
@@ -69,6 +72,7 @@ public abstract class ResourceRecord<ID, RD extends ResourceDescriptor<ID>> exte
         this.name = descriptor.getName();
         this.description = descriptor.getDescription().orElse(null);
         this.iconUri = descriptor.getIconUri().map(URI::toString).orElse(null);
+        this.documentationUri = descriptor.getDocumentationUri().map(URI::toString).orElse(null);
         cachedPublicKey = registration.getPublicKey();
         this.algorithm = cachedPublicKey.getAlgorithm();
         this.publicKey = cachedPublicKey.getEncoded();
@@ -90,6 +94,11 @@ public abstract class ResourceRecord<ID, RD extends ResourceDescriptor<ID>> exte
     @Nullable
     public URI getIconUri() {
         return iconUri == null ? null : URI.create(iconUri);
+    }
+
+    @Nullable
+    public URI getDocumentationUri() {
+        return documentationUri == null ? null : URI.create(documentationUri);
     }
 
     @Nullable

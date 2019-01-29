@@ -10,39 +10,77 @@
                 return 'portal-support';
             }
 
-            // TODO All postMessage should have the real origin of the portal server instead of '*'
-
-            navigateTo(frontend, version, parameters = null) {
-                if (window.parent) {
-                    console.log(`Navigating to ${frontend} ${version} with parameters ${parameters}`);
-                    window.parent.postMessage({
-                        'action': 'navigate',
-                        'data': {
-                            'frontend': frontend,
-                            'version': version,
-                            'parameters': parameters
-                        }
-                    }, "*");
+            ready() {
+                super.ready();
+                if (this.portalOrigin) {
+                    console.log(`Origin of portal server is ${this.portalOrigin}`);
                 } else {
-                    console.log('No parent window to send navigation message to');
+                    console.warn('Origin of portal server is unknown');
+                }
+                window.addEventListener('message', this._onMessage.bind(this), false);
+            }
+
+            _onMessage(event) {
+                console.log(`Received message ${event.data} from ${event.origin}`);
+                if (event.origin !== this.portalOrigin) {
+                    console.warn('Message was not from portal server, ignoring');
+                } else if (event.data.type === 'init-frontend-frame') {
+                    let uuid = event.data.uuid;
+                    if (uuid) {
+                        console.log(`Frontend frame initialized with UUID ${uuid}`);
+                        this.uuid = uuid;
+                    } else {
+                        console.warn('init-frontend-frame message did not contain UUID');
+                    }
+                } else if (event.data.type === 'message-from-other-frontend') {
+                    let sender = event.data.sender;
+                    let message = event.data.message;
+                    if (sender && message) {
+                        console.log(`Received message from frontend ${sender}`);
+                        this.dispatchEvent(new CustomEvent('messageFromFrontend', {
+                            detail: {
+                                sender: sender,
+                                message: message
+                            }
+                        }));
+                    } else {
+                        console.warn('message-from-other-frontend message did not contain sender or message');
+                    }
                 }
             }
 
-            forwardMessageTo(frontend, version, message) {
+            showFrontend(frontend) {
                 if (window.parent) {
-                    console.log(`Forwarding message ${message} to ${frontend} ${version}`);
+                    console.log(`Navigating to ${frontend}`);
                     window.parent.postMessage({
-                        'action': 'forwardMessage',
-                        'data': {
-                            'frontend': frontend,
-                            'version': version,
-                            'message': message
-                        }
-                    }, "*");
+                        type: 'open-frontend',
+                        frontend: frontend,
+                        sender: this.uuid
+                    }, this.portalOrigin);
                 }
             }
 
-            // TODO Notify server of something. For this, the portal integration needs an identifier that the portal uses for a particular tab.
+            postMessage(frontend, message) {
+                if (window.parent) {
+                    console.log(`Forwarding message ${message} to ${frontend}`);
+                    window.parent.postMessage({
+                        type: 'send-to-frontend',
+                        frontend: frontend,
+                        message: message,
+                        sender: this.uuid
+                    }, this.portalOrigin);
+                }
+            }
+
+            notifyUser() {
+                if (window.parent) {
+                    console.log('Notifying user');
+                    window.parent.postMessage({
+                        type: 'notify-user',
+                        sender: this.uuid
+                    })
+                }
+            }
         }
 
         customElements.define(PortalSupport.is, PortalSupport);

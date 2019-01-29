@@ -6,5 +6,5 @@ service-directory:
     uri: http://localhost:9999/
 logging:
   level:
-    net.pkhapps.playground: debug
+    net.pkhapps.playground.microservices: debug
 

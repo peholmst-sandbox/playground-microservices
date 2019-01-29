@@ -3,8 +3,10 @@ package net.pkhapps.playground.microservices.portal.server.ui.component;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.dom.DomEvent;
 import elemental.json.JsonValue;
 import net.pkhapps.playground.microservices.directory.api.FrontendId;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -16,9 +18,43 @@ import java.util.UUID;
 @Tag("frontend-listener")
 public class FrontendListener extends Component {
 
+    @Nullable
     private NotifyUserHandler notifyUserHandler;
+    @Nullable
     private SendToFrontendHandler sendToFrontendHandler;
+    @Nullable
     private OpenFrontendHandler openFrontendHandler;
+
+    public FrontendListener() {
+        getElement().addEventListener("notify-user", this::onNotifyUser).addEventData("event.detail");
+        getElement().addEventListener("send-to-frontend", this::onSendToFrontend).addEventData("event.detail");
+        getElement().addEventListener("open-frontend", this::onOpenFrontend).addEventData("event.detail");
+    }
+
+    private void onNotifyUser(DomEvent event) {
+        if (notifyUserHandler != null) {
+            notifyUserHandler.onNotifyUser(UUID.fromString(event.getEventData().getString("event.detail.uuid")));
+        }
+    }
+
+    private void onSendToFrontend(DomEvent event) {
+        if (sendToFrontendHandler != null) {
+            var uuid = UUID.fromString(event.getEventData().getString("event.detail.uuid"));
+            var recipient = new FrontendId(event.getEventData().getString("event.detail.recipient"));
+            var payload = event.getEventData().getObject("event.detail.payload"); // TODO Will this work with a simple string as well?
+            sendToFrontendHandler.onSendToFrontend(uuid, recipient, payload);
+        }
+    }
+
+    // TODO Access to event data is wrong, results in NPEs
+
+    private void onOpenFrontend(DomEvent event) {
+        if (openFrontendHandler != null) {
+            var uuid = UUID.fromString(event.getEventData().getString("event.detail.uuid"));
+            var frontend = new FrontendId(event.getEventData().getString("event.detail.frontend"));
+            openFrontendHandler.onOpenFrontend(uuid, frontend);
+        }
+    }
 
     public void setNotifyUserHandler(NotifyUserHandler notifyUserHandler) {
         this.notifyUserHandler = notifyUserHandler;
