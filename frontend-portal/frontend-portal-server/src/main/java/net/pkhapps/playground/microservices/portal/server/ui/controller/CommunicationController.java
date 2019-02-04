@@ -34,4 +34,8 @@ public class CommunicationController implements Serializable {
             openFrontendModel.openAndFocus(frontendToOpen);
         }
     }
+
+    public void onFrontendFrameInitialized(UUID openFrontendUuid) {
+        openFrontendModel.getByUuid(openFrontendUuid).ifPresent(OpenFrontend::initialize);
+    }
 }

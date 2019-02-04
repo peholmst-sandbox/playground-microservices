@@ -3,6 +3,10 @@
 <dom-module id="frontend-frame">
     <template>
         <style>
+            :host {
+                display: flex;
+            }
+
             #frame {
                 border: 0;
                 outline: 0;
@@ -31,7 +35,7 @@
             initialize(clientUri, origin, uuid) {
                 this.origin = origin;
                 this.uuid = uuid;
-                console.log(`Initializing frontend frame with origin: '${origin}', clientUri: '${clientUri}', uuid: '${uuid}'`);
+                console.log(`frontend-frame: Initializing frontend frame with origin: '${origin}', clientUri: '${clientUri}', uuid: '${uuid}'`);
                 this.$.frame.src = clientUri;
             }
 

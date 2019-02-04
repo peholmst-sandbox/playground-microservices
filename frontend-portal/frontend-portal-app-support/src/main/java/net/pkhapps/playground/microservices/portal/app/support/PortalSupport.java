@@ -7,6 +7,8 @@ import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.shared.Registration;
 import elemental.json.JsonValue;
 import net.pkhapps.playground.microservices.directory.api.FrontendId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -20,8 +22,8 @@ import java.util.Set;
 @Tag("portal-support")
 public class PortalSupport extends Component {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalSupport.class);
     private final Set<MessageListener> messageListeners = new HashSet<>();
-    private final Set<JsonConverter<?>> converters = new HashSet<>();
 
     /**
      * @param portalUri
@@ -34,24 +36,21 @@ public class PortalSupport extends Component {
     }
 
     private void onMessageFromFrontend(DomEvent event) {
-        // TODO Implement me!
+        LOGGER.debug("Received message {}", event.getEventData());
+        if (event.getEventData().hasKey("event.detail")) {
+            var eventDetail = event.getEventData().getObject("event.detail");
+            if (eventDetail.hasKey("sender") && eventDetail.hasKey("message")) {
+                var sender = eventDetail.getString("sender");
+                var message = eventDetail.get("message");
+                var messageEvent = new MessageEvent(new FrontendId(sender), message);
+                Set.copyOf(messageListeners).forEach(listener -> listener.onMessageReceived(messageEvent));
+            }
+        }
     }
 
-    @Deprecated
     public Registration addMessageListener(MessageListener listener) {
         messageListeners.add(listener);
         return () -> messageListeners.remove(listener);
-    }
-
-    /**
-     * Adds a new converter for converting between POJOs and JSON.
-     *
-     * @param converter the converter to add.
-     * @return this object, to allow for method chaining.
-     */
-    public PortalSupport addConverter(JsonConverter<?> converter) {
-        converters.add(Objects.requireNonNull(converter, "converter must not be null"));
-        return this;
     }
 
     /**
@@ -65,24 +64,6 @@ public class PortalSupport extends Component {
         Objects.requireNonNull(frontend, "frontend must not be null");
         getElement().callFunction("showFrontend", frontend.toString());
         return this;
-    }
-
-    /**
-     * Sends the given message to the given frontend. If the frontend is already open in a tab, the message will be
-     * delivered directly. Otherwise, the portal will open the frontend in a new tab and then deliver the message. In
-     * both cases, the portal will not switch to the frontend.
-     * <p>
-     * A {@link #addConverter(JsonConverter) converter} for the message must have been registered prior to calling this
-     * method.
-     *
-     * @param frontend the ID of the frontend to send the message to.
-     * @param message  the message to send.
-     * @param <M>      the type of the message.
-     * @return this object, to allow for method chaining.
-     * @throws IllegalArgumentException if the message cannot be converted to a JSON value.
-     */
-    public <M> PortalSupport postMessage(FrontendId frontend, M message) {
-        return postMessage(frontend, getConverterForMessage(message).convertToJson(message));
     }
 
     /**
@@ -108,14 +89,5 @@ public class PortalSupport extends Component {
      */
     public void notifyUser() {
         getElement().callFunction("notifyUser");
-    }
-
-    @SuppressWarnings("unchecked")
-    private <M> JsonConverter<M> getConverterForMessage(M message) {
-        Objects.requireNonNull(message, "message must not be null");
-        return (JsonConverter<M>) converters.stream()
-                .filter(c -> c.supportsPojo(message))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Could not find a converter for message " + message));
     }
 }

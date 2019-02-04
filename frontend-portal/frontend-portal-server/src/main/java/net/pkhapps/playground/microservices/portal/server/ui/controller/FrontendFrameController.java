@@ -47,17 +47,18 @@ public class FrontendFrameController implements Serializable {
     }
 
     private void onOpen(OpenFrontend openFrontend) {
-        openFrames.values().forEach(FrontendFrame::hide);
         var frame = openFrames.get(openFrontend);
         if (frame == null) {
             LOGGER.debug("Adding frame for {}", openFrontend);
             frame = new FrontendFrame(openFrontend);
+            frame.hide();
             openFrames.put(openFrontend, frame);
             containerDiv.getElement().appendChild(frame.getElement());
         }
     }
 
     private void onFocus(OpenFrontend openFrontend) {
+        openFrames.values().forEach(FrontendFrame::hide);
         var frame = openFrames.get(openFrontend);
         if (frame != null) {
             LOGGER.debug("Showing frame for {}", openFrontend);

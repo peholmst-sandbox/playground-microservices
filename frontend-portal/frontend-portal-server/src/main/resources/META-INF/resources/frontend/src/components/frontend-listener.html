@@ -30,15 +30,16 @@
                     case 'open-frontend':
                         this._onOpenFrontend(data, origin);
                         break;
-                    default:
-                        console.log(`Received message of unknown type ${type} from ${origin}, ignoring`);
+                    case 'frontend-frame-initialized':
+                        this._onFrontendFrameInitialized(data, origin);
+                        break;
                 }
             }
 
             _onNotifyUser(message, origin) {
                 if (message.sender) {
                     let uuid = message.sender;
-                    console.log(`Notifying user in tab ${uuid} from origin ${origin}`);
+                    console.log(`frontend-listener: Notifying user in tab ${uuid} from origin ${origin}`);
                     this.dispatchEvent(new CustomEvent('notify-user', {
                         detail: {
                             uuid: uuid
@@ -52,7 +53,7 @@
                     let recipient = message.frontend;
                     let payload = message.message;
                     let uuid = message.sender;
-                    console.log(`Sending message to ${recipient} from tab ${uuid}`);
+                    console.log(`frontend-listener: Sending message to ${recipient} from tab ${uuid}`);
                     this.dispatchEvent(new CustomEvent('send-to-frontend', {
                         detail: {
                             recipient: recipient,
@@ -67,10 +68,22 @@
                 if (message.frontend && message.sender) {
                     let frontendToOpen = message.frontend;
                     let uuid = message.sender;
-                    console.log(`Opening frontend ${frontendToOpen} from tab ${uuid}`);
+                    console.log(`frontend-listener: Opening frontend ${frontendToOpen} from tab ${uuid}`);
                     this.dispatchEvent(new CustomEvent('open-frontend', {
                         detail: {
                             frontend: frontendToOpen,
+                            uuid: uuid
+                        }
+                    }));
+                }
+            }
+
+            _onFrontendFrameInitialized(message, origin) {
+                if (message.sender) {
+                    let uuid = message.sender;
+                    console.log(`frontend-listener: Frontend frame ${uuid} initialized`);
+                    this.dispatchEvent(new CustomEvent('frontend-frame-initialized', {
+                        detail: {
                             uuid: uuid
                         }
                     }));

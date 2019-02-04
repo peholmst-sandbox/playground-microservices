@@ -4,8 +4,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.dom.DomEvent;
+import elemental.json.JsonObject;
 import elemental.json.JsonValue;
 import net.pkhapps.playground.microservices.directory.api.FrontendId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
@@ -18,42 +21,79 @@ import java.util.UUID;
 @Tag("frontend-listener")
 public class FrontendListener extends Component {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FrontendListener.class);
+
     @Nullable
     private NotifyUserHandler notifyUserHandler;
     @Nullable
     private SendToFrontendHandler sendToFrontendHandler;
     @Nullable
     private OpenFrontendHandler openFrontendHandler;
+    @Nullable
+    private FrontendFrameInitializedHandler frontendFrameInitializedHandler;
 
     public FrontendListener() {
         getElement().addEventListener("notify-user", this::onNotifyUser).addEventData("event.detail");
         getElement().addEventListener("send-to-frontend", this::onSendToFrontend).addEventData("event.detail");
         getElement().addEventListener("open-frontend", this::onOpenFrontend).addEventData("event.detail");
+        getElement().addEventListener("frontend-frame-initialized", this::onFrontendFrameInitialized).addEventData("event.detail");
     }
 
     private void onNotifyUser(DomEvent event) {
         if (notifyUserHandler != null) {
-            notifyUserHandler.onNotifyUser(UUID.fromString(event.getEventData().getString("event.detail.uuid")));
+            LOGGER.debug("onNotifyUser: {}", event.getEventData());
+            notifyUserHandler.onNotifyUser(extractUuid(extractDetail(event)));
         }
     }
 
     private void onSendToFrontend(DomEvent event) {
         if (sendToFrontendHandler != null) {
-            var uuid = UUID.fromString(event.getEventData().getString("event.detail.uuid"));
-            var recipient = new FrontendId(event.getEventData().getString("event.detail.recipient"));
-            var payload = event.getEventData().getObject("event.detail.payload"); // TODO Will this work with a simple string as well?
+            LOGGER.debug("onSendToFrontend: {}", event.getEventData());
+            var eventDetail = extractDetail(event);
+            var uuid = extractUuid(eventDetail);
+            var recipient = new FrontendId(extractString(eventDetail, "recipient"));
+            var payload = extractJsonValue(eventDetail, "payload");
             sendToFrontendHandler.onSendToFrontend(uuid, recipient, payload);
         }
     }
 
-    // TODO Access to event data is wrong, results in NPEs
-
     private void onOpenFrontend(DomEvent event) {
         if (openFrontendHandler != null) {
-            var uuid = UUID.fromString(event.getEventData().getString("event.detail.uuid"));
-            var frontend = new FrontendId(event.getEventData().getString("event.detail.frontend"));
+            LOGGER.debug("onOpenFrontend: {}", event.getEventData());
+            var eventDetail = extractDetail(event);
+            var uuid = extractUuid(eventDetail);
+            var frontend = new FrontendId(extractString(eventDetail, "frontend"));
             openFrontendHandler.onOpenFrontend(uuid, frontend);
         }
+    }
+
+    private void onFrontendFrameInitialized(DomEvent event) {
+        if (frontendFrameInitializedHandler != null) {
+            LOGGER.debug("onFrontendFrameInitialized: {}", event.getEventData());
+            frontendFrameInitializedHandler.onFrontendFrameInitialized(extractUuid(extractDetail(event)));
+        }
+    }
+
+    private static JsonObject extractDetail(DomEvent event) {
+        if (!event.getEventData().hasKey("event.detail")) {
+            throw new IllegalArgumentException("DomEvent did not contain details");
+        }
+        return event.getEventData().getObject("event.detail");
+    }
+
+    private static UUID extractUuid(JsonObject eventDetail) {
+        return UUID.fromString(extractString(eventDetail, "uuid"));
+    }
+
+    private static String extractString(JsonObject eventDetail, String attributeName) {
+        return extractJsonValue(eventDetail, attributeName).asString();
+    }
+
+    private static JsonValue extractJsonValue(JsonObject eventDetail, String attributeName) {
+        if (!eventDetail.hasKey(attributeName)) {
+            throw new IllegalArgumentException("Event detail did not contain attribute " + attributeName);
+        }
+        return eventDetail.get(attributeName);
     }
 
     public void setNotifyUserHandler(NotifyUserHandler notifyUserHandler) {
@@ -66,6 +106,10 @@ public class FrontendListener extends Component {
 
     public void setOpenFrontendHandler(OpenFrontendHandler openFrontendHandler) {
         this.openFrontendHandler = openFrontendHandler;
+    }
+
+    public void setFrontendFrameInitializedHandler(FrontendFrameInitializedHandler frontendFrameInitializedHandler) {
+        this.frontendFrameInitializedHandler = frontendFrameInitializedHandler;
     }
 
     @FunctionalInterface
@@ -100,5 +144,16 @@ public class FrontendListener extends Component {
          * @param frontendToOpen   the ID of the frontend to open.
          */
         void onOpenFrontend(UUID openFrontendUuid, FrontendId frontendToOpen);
+    }
+
+    @FunctionalInterface
+    public interface FrontendFrameInitializedHandler extends Serializable {
+
+        /**
+         * TODO Document me!
+         *
+         * @param openFrontendUuid
+         */
+        void onFrontendFrameInitialized(UUID openFrontendUuid);
     }
 }

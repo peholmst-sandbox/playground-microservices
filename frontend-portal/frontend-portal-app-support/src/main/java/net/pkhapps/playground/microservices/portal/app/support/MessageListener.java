@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 /**
  * TODO Document me!
- *
- * @param <E>
  */
 @FunctionalInterface
-public interface MessageListener<E extends MessageEvent> extends Serializable {
+public interface MessageListener extends Serializable {
 
     /**
      * @param event
      */
-    void onMessageReceived(E event);
+    void onMessageReceived(MessageEvent event);
 }

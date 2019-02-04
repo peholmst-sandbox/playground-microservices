@@ -1,5 +1,10 @@
 package net.pkhapps.playground.microservices.portal.server.ui.controller;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.shared.Registration;
@@ -36,7 +41,7 @@ public class TabController implements Serializable {
 
     private void onTabSelectionChange(Tabs.SelectedChangeEvent event) {
         var selectedTab = component.getSelectedTab();
-        if (selectedTab != null) {
+        if (selectedTab != null && component.getComponentCount() > 1) {
             findByTab(component.getSelectedTab()).ifPresent(t -> model.focus(t.openFrontend));
         }
     }
@@ -50,7 +55,10 @@ public class TabController implements Serializable {
 
     private void onFocus(OpenFrontend openFrontend) {
         LOGGER.debug("Selecting tab for {}", openFrontend);
-        findByOpenFrontend(openFrontend).ifPresent(t -> component.setSelectedTab(t.tab));
+        findByOpenFrontend(openFrontend).ifPresent(t -> {
+            component.setSelectedTab(t.tab);
+            t.hideNotification();
+        });
     }
 
     private void onClose(OpenFrontend openFrontend) {
@@ -73,16 +81,25 @@ public class TabController implements Serializable {
         private final Tab tab;
         private final OpenFrontend openFrontend;
         private final Registration notificationRegistration;
+        private Icon notificationIcon;
 
         OpenFrontendTab(OpenFrontend openFrontend) {
             this.openFrontend = Objects.requireNonNull(openFrontend, "openFrontend must not be null");
-            notificationRegistration = openFrontend.addNotificationListener(this::onNotification);
-            tab = new Tab(openFrontend.getFrontend().getName());
-            // TODO Close button
+            notificationRegistration = openFrontend.addNotificationListener(this::showNotification);
+            var closeButton = new Button(VaadinIcon.CLOSE.create(), event -> model.close(openFrontend));
+            closeButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_SMALL);
+            notificationIcon = VaadinIcon.INFO_CIRCLE.create();
+            notificationIcon.setColor("red");
+            notificationIcon.setVisible(false);
+            tab = new Tab(new Span(openFrontend.getFrontend().getName()), notificationIcon, closeButton);
         }
 
-        private void onNotification() {
-            // TODO Apply some style to the tab or something similar to make it stand out. Then remove it once the user navigates to it.
+        private void showNotification() {
+            notificationIcon.setVisible(true);
+        }
+
+        private void hideNotification() {
+            notificationIcon.setVisible(false);
         }
 
         @Override

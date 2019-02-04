@@ -53,6 +53,7 @@ public class MainRoute extends PolymerTemplate<TemplateModel> {
         frontendListener.setNotifyUserHandler(communicationController::onNotifyUser);
         frontendListener.setOpenFrontendHandler(communicationController::onOpenFrontend);
         frontendListener.setSendToFrontendHandler(communicationController::onSendToFrontend);
+        frontendListener.setFrontendFrameInitializedHandler(communicationController::onFrontendFrameInitialized);
 
         navigationBarController.populate(serviceDirectory);
 
