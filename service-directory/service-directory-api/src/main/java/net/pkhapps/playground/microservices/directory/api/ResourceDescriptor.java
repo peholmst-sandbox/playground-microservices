@@ -24,27 +24,35 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
     @JsonProperty
     private final String name;
     @JsonProperty
+    @Nullable
     private final String description;
     @JsonProperty
+    @Nullable
     private final URI iconUri;
+    @JsonProperty
+    @Nullable
+    private final URI documentationUri;
 
     /**
      * Creates a new resource descriptor.
      *
-     * @param id          the ID of the resource.
-     * @param name        the human readable name of the resource.
-     * @param description an optional human readable description of the resource.
-     * @param iconUri     an optional URI of an icon for the resource.
+     * @param id               the ID of the resource.
+     * @param name             the human readable name of the resource.
+     * @param description      an optional human readable description of the resource.
+     * @param iconUri          an optional URI of an icon for the resource.
+     * @param documentationUri an optional URI of the documentation for this resource.
      */
     @JsonCreator
     public ResourceDescriptor(@JsonProperty(value = "id", required = true) ID id,
                               @JsonProperty(value = "name", required = true) String name,
                               @JsonProperty(value = "description") @Nullable String description,
-                              @JsonProperty(value = "iconUri") @Nullable URI iconUri) {
+                              @JsonProperty(value = "iconUri") @Nullable URI iconUri,
+                              @JsonProperty(value = "documentationUri") @Nullable URI documentationUri) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.description = description;
         this.iconUri = iconUri;
+        this.documentationUri = documentationUri;
     }
 
     /**
@@ -77,6 +85,14 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
         return Optional.ofNullable(iconUri);
     }
 
+    /**
+     * Returns the optional documentation URI of the resource.
+     */
+    @JsonIgnore
+    public final Optional<URI> getDocumentationUri() {
+        return Optional.ofNullable(documentationUri);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,12 +101,13 @@ public abstract class ResourceDescriptor<ID> implements Serializable {
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
-                Objects.equals(iconUri, that.iconUri);
+                Objects.equals(iconUri, that.iconUri) &&
+                Objects.equals(documentationUri, that.documentationUri);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, iconUri);
+        return Objects.hash(id, name, description, iconUri, documentationUri);
     }
 
     @Override

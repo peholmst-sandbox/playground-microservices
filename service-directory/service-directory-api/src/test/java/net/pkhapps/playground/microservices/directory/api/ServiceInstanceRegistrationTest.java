@@ -28,7 +28,6 @@ public class ServiceInstanceRegistrationTest {
     public void setUp() {
         registration = new ServiceInstanceRegistration(
                 new ServiceInstanceDescriptor(new ServiceId("myservice"),
-                        new Version("v1"),
                         URI.create("http://myservice.foo.bar/api/v1"),
                         URI.create("http://myservice.foo.bar/ping/v1")),
                 KEY_PAIR.getPrivate());
@@ -42,8 +41,7 @@ public class ServiceInstanceRegistrationTest {
     @Test
     public void verifySignature_alterRegistrationData_signatureInvalid() {
         var alteredRegistration = new ServiceInstanceRegistration(new ServiceInstanceDescriptor(
-                registration.getDescriptor().getId(),
-                registration.getDescriptor().getVersion(),
+                registration.getDescriptor().getResourceId(),
                 URI.create("http://myservice.evil.corp/api/v1"),
                 registration.getDescriptor().getPingUri()), registration.getAlgorithm(), registration.getSignature());
         assertThat(alteredRegistration.verifySignature(KEY_PAIR.getPublic())).isFalse();

@@ -4,3 +4,7 @@ server:
 service-directory:
   client:
     uri: http://localhost:9999/
+logging:
+  level:
+    net.pkhapps.playground.microservices: debug
+

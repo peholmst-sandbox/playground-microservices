@@ -48,8 +48,8 @@ public abstract class ResourceRegistrationService<ID,
     }
 
     public void registerInstance(RIR registration) {
-        var publicKey = getPublicKey(registration.getDescriptor().getId())
-                .orElseThrow(() -> new NoSuchResourceException("Resource with ID " + registration.getDescriptor().getId() + " does not exist"));
+        var publicKey = getPublicKey(registration.getDescriptor().getResourceId())
+                .orElseThrow(() -> new NoSuchResourceException("Resource with ID " + registration.getDescriptor().getResourceId() + " does not exist"));
         if (!registration.verifySignature(publicKey)) {
             logger.warn("Invalid signature for instance registration {}", registration.getDescriptor());
             throw new InvalidSignatureException("Signature of instance registration request was not valid");

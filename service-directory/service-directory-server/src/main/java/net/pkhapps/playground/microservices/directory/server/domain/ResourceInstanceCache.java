@@ -3,6 +3,7 @@ package net.pkhapps.playground.microservices.directory.server.domain;
 import net.pkhapps.playground.microservices.directory.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 import java.net.URI;
 import java.time.Clock;
@@ -21,7 +22,7 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Clock clock;
     private final AtomicReference<RD> resourceDescriptor = new AtomicReference<>();
-    private final ConcurrentMap<InstanceId, InstanceCacheEntry> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<ResourceInstanceId<ID>, InstanceCacheEntry> cache = new ConcurrentHashMap<>();
 
     public ResourceInstanceCache(RD resourceDescriptor, Clock clock) {
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
@@ -37,11 +38,13 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
     }
 
     public void addInstance(RID instance) {
-        cache.put(new InstanceId(instance), new InstanceCacheEntry(instance));
+        logger.debug("Adding instance {} to cache", instance);
+        cache.put(new ResourceInstanceId<>(instance), new InstanceCacheEntry(instance));
     }
 
     public void removeInstance(RID instance) {
-        cache.remove(new InstanceId(instance));
+        logger.debug("Removing instance {} from cache", instance);
+        cache.remove(new ResourceInstanceId<>(instance));
     }
 
     public void clear() {
@@ -49,15 +52,17 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
     }
 
     public void pingSucceeded(RID instance) {
+        logger.trace("Ping of instance {} succeeded", instance);
         getCacheEntry(instance).ifPresent(InstanceCacheEntry::pingSucceeded);
     }
 
     public void pingFailed(RID instance) {
+        logger.trace("Ping of instance {} failed");
         getCacheEntry(instance).ifPresent(InstanceCacheEntry::pingFailed);
     }
 
     private Optional<InstanceCacheEntry> getCacheEntry(RID instance) {
-        return Optional.ofNullable(cache.get(new InstanceId(instance)));
+        return Optional.ofNullable(cache.get(new ResourceInstanceId<>(instance)));
     }
 
     public Stream<RID> getInstances() {
@@ -70,36 +75,6 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
 
     public int size() {
         return cache.size();
-    }
-
-    private class InstanceId {
-
-        private final ID resourceId;
-        private final Version version;
-        private final URI clientUri;
-
-        InstanceId(RID instance) {
-            Objects.requireNonNull(instance, "instance must not be null");
-            this.resourceId = instance.getId();
-            this.version = instance.getVersion();
-            this.clientUri = instance.getClientUri();
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            InstanceId that = (InstanceId) o;
-            return resourceId.equals(that.resourceId) &&
-                    version.equals(that.version) &&
-                    clientUri.equals(that.clientUri);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(resourceId, version, clientUri);
-        }
     }
 
     protected abstract RIS createStatus(RID instance, ResourceInstanceState state, Instant lastSeen);
@@ -161,7 +136,8 @@ public abstract class ResourceInstanceCache<ID, RD extends ResourceDescriptor<ID
         private void recreateStatus() {
             if (status == null || status.getState() != state || !status.getLastSeen().equals(lastSeen)) {
                 if (status == null || status.getState() != state) {
-                    logger.info("Instance with id: [{}], version: [{}], clientUri: [{}] is {}", instance.getId(), instance.getVersion(), instance.getClientUri(), state);
+                    logger.info("Instance with id: [{}], clientUri: [{}] is {}", instance.getResourceId(),
+                            instance.getClientUri(), state);
                 }
                 status = createStatus(instance, state, lastSeen);
             }

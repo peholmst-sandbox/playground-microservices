@@ -1,0 +1,92 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="portal-support">
+    <template>
+    </template>
+
+    <script>
+        class PortalSupport extends Polymer.Element {
+            static get is() {
+                return 'portal-support';
+            }
+
+            ready() {
+                super.ready();
+                if (this.portalOrigin) {
+                    console.log(`portal-support: Origin of portal server is ${this.portalOrigin}`);
+                } else {
+                    console.warn('portal-support: Origin of portal server is unknown');
+                }
+                window.addEventListener('message', this._onMessage.bind(this), false);
+            }
+
+            _onMessage(event) {
+                console.log(`portal-support: Received message ${JSON.stringify(event.data)} from ${event.origin}`);
+                if (event.origin !== this.portalOrigin) {
+                    console.warn('portal-support: Message was not from portal server, ignoring');
+                } else if (event.data.type === 'init-frontend-frame') {
+                    let uuid = event.data.uuid;
+                    if (uuid) {
+                        console.log(`portal-support: Frontend frame initialized with UUID ${uuid}`);
+                        this.uuid = uuid;
+                        window.parent.postMessage({
+                            type: 'frontend-frame-initialized',
+                            sender: this.uuid
+                        }, this.portalOrigin);
+                    } else {
+                        console.warn('portal-support: init-frontend-frame message did not contain UUID');
+                    }
+                } else if (event.data.type === 'message-from-other-frontend') {
+                    let sender = event.data.sender;
+                    let message = event.data.message;
+                    if (sender && message) {
+                        console.log(`portal-support: Received message from frontend ${sender}`);
+                        this.dispatchEvent(new CustomEvent('messageFromFrontend', {
+                            detail: {
+                                sender: sender,
+                                message: message
+                            }
+                        }));
+                    } else {
+                        console.warn('portal-support: message-from-other-frontend message did not contain sender or message');
+                    }
+                }
+            }
+
+            showFrontend(frontend) {
+                if (window.parent) {
+                    console.log(`portal-support: Navigating to ${frontend}`);
+                    window.parent.postMessage({
+                        type: 'open-frontend',
+                        frontend: frontend,
+                        sender: this.uuid
+                    }, this.portalOrigin);
+                }
+            }
+
+            postMessage(frontend, message) {
+                if (window.parent) {
+                    console.log(`portal-support: Forwarding message ${JSON.stringify(message)} to ${frontend}`);
+                    window.parent.postMessage({
+                        type: 'send-to-frontend',
+                        frontend: frontend,
+                        message: message,
+                        sender: this.uuid
+                    }, this.portalOrigin);
+                }
+            }
+
+            notifyUser() {
+                if (window.parent) {
+                    console.log('portal-support: Notifying user');
+                    window.parent.postMessage({
+                        type: 'notify-user',
+                        sender: this.uuid
+                    }, this.portalOrigin);
+                }
+            }
+        }
+
+        customElements.define(PortalSupport.is, PortalSupport);
+    </script>
+</dom-module>

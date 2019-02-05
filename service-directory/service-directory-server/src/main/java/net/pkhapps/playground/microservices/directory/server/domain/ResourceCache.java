@@ -4,6 +4,8 @@ import net.pkhapps.playground.microservices.directory.api.ResourceDescriptor;
 import net.pkhapps.playground.microservices.directory.api.ResourceInstanceDescriptor;
 import net.pkhapps.playground.microservices.directory.api.ResourceInstanceStatus;
 import net.pkhapps.playground.microservices.directory.api.ResourceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.util.Collection;
@@ -18,6 +20,7 @@ public abstract class ResourceCache<ID, RD extends ResourceDescriptor<ID>, RID e
         RIS extends ResourceInstanceStatus<RID>, RS extends ResourceStatus<ID, RD, RID, RIS>,
         C extends ResourceInstanceCache<ID, RD, RID, RIS>> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Clock clock;
     private final ConcurrentMap<ID, C> cacheMap = new ConcurrentHashMap<>();
     private final BiFunction<RD, Clock, C> cacheFactory;
@@ -32,27 +35,31 @@ public abstract class ResourceCache<ID, RD extends ResourceDescriptor<ID>, RID e
     }
 
     public void addResource(RD resource) {
+        logger.debug("Adding resource {} to cache", resource);
         cacheMap.computeIfAbsent(resource.getId(), id -> createCache(resource, clock)).setResourceDescriptor(resource);
     }
 
     public void removeResource(RD resource) {
+        logger.debug("Removing resource {} from cache", resource);
         cacheMap.remove(resource.getId());
     }
 
     public void addInstance(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.addInstance(instance));
+        logger.debug("Adding instance {} to instance cache", instance);
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.addInstance(instance));
     }
 
     public void removeInstance(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.removeInstance(instance));
+        logger.debug("Removing instance {} from instance cache", instance);
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.removeInstance(instance));
     }
 
     public void pingSucceeded(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.pingSucceeded(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.pingSucceeded(instance));
     }
 
     public void pingFailed(RID instance) {
-        getCache(instance.getId()).ifPresent(cache -> cache.pingFailed(instance));
+        getCache(instance.getResourceId()).ifPresent(cache -> cache.pingFailed(instance));
     }
 
     public Stream<RID> getInstances() {
@@ -68,6 +75,7 @@ public abstract class ResourceCache<ID, RD extends ResourceDescriptor<ID>, RID e
     }
 
     private C createCache(RD resource, Clock clock) {
+        logger.debug("Creating new cache for resource {}", resource);
         return cacheFactory.apply(resource, clock);
     }
 

@@ -25,8 +25,8 @@ public class ServiceRegistrationTest {
 
     @Before
     public void setUp() {
-        registration = new ServiceRegistration(new ServiceDescriptor(new ServiceId("myservice"),
-                "My Service", "My Service Descriptor", null), KEY_PAIR.getPublic());
+        registration = new ServiceRegistration(new ServiceDescriptor(new ServiceId("myservice"), "My Service"),
+                KEY_PAIR.getPublic());
     }
 
     @Test

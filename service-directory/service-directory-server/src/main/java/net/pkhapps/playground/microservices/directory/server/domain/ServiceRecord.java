@@ -20,6 +20,6 @@ public class ServiceRecord extends ResourceRecord<ServiceId, ServiceDescriptor> 
 
     @Override
     public ServiceDescriptor toDescriptor() {
-        return new ServiceDescriptor(getResourceId(), getName(), getDescription(), getIconUri());
+        return new ServiceDescriptor(getResourceId(), getName(), getDescription(), getIconUri(), getDocumentationUri());
     }
 }

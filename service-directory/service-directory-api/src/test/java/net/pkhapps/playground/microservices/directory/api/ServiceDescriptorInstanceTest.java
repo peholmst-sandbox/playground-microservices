@@ -18,7 +18,6 @@ public class ServiceDescriptorInstanceTest {
     @Before
     public void setUp() {
         instance = new ServiceInstanceDescriptor(new ServiceId("myservice"),
-                new Version("v1"),
                 URI.create("http://myservice.foo.bar/api/v1"),
                 URI.create("http://myservice.foo.bar/ping/v1"));
     }

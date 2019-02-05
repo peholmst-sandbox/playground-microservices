@@ -20,6 +20,6 @@ public class FrontendRecord extends ResourceRecord<FrontendId, FrontendDescripto
 
     @Override
     public FrontendDescriptor toDescriptor() {
-        return new FrontendDescriptor(getResourceId(), getName(), getDescription(), getIconUri());
+        return new FrontendDescriptor(getResourceId(), getName(), getDescription(), getIconUri(), getDocumentationUri());
     }
 }
