@@ -1,5 +1,7 @@
 server:
   port: 8201
+  servlet:
+    context-path: /app2
 
 service-directory:
   client:

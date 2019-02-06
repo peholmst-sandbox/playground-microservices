@@ -23,7 +23,7 @@ public class SampleApp2 {
         var keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
         var frontendId = new FrontendId("sample-app-2");
         serviceDirectory.registerFrontend(new FrontendRegistration(new FrontendDescriptor(frontendId, "Sample App 2", null, null, null), keyPair.getPublic()));
-        serviceDirectory.registerInstance(new FrontendInstanceRegistration(new FrontendInstanceDescriptor(frontendId, URI.create("http://localhost2:8201"), URI.create("http://localhost2:8201/ping"), null), keyPair.getPrivate()));
+        serviceDirectory.registerInstance(new FrontendInstanceRegistration(new FrontendInstanceDescriptor(frontendId, URI.create("http://localhost:8201/app2"), URI.create("http://localhost:8201/app2/ping"), null), keyPair.getPrivate()));
     }
 
     public static void main(String[] args) {

@@ -1,16 +1,8 @@
 server:
   port: 8200
+  servlet:
+    context-path: /app1
 
 service-directory:
   client:
     uri: http://localhost:9999/
-    keystore:
-      location: file:C:\Users\pette\GitHub\playground-microservices\keystore.ks
-      password: changeit
-    frontend:
-      id: sample-app-1
-      client-uri: http://localhost:8200/
-      ping-uri: http://localhost:8200/ping
-      notifications-uri: http://localhost:8200/notifications
-      logout-uri: http://localhost:8200/logout
-      keystore-entry: frontend-key
