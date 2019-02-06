@@ -19,7 +19,7 @@
                 let origin = event.origin;
                 let data = event.data;
                 let type = data.type || 'unknown';
-
+                console.log(`frontend-listener: Received message ${JSON.stringify(data)} from origin ${origin}`);
                 switch (type) {
                     case 'notify-user':
                         this._onNotifyUser(data, origin);
