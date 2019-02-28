@@ -1,5 +1,9 @@
 server:
   port: 9990
+  servlet:
+    session:
+      cookie:
+        name: AUTHUISESSION
 
 security:
   oauth2:

@@ -45,18 +45,28 @@ public class TestDataGenerator {
     }
 
     private void createTestClients() {
-        BaseClientDetails portalServer = new BaseClientDetails();
+        var portalServer = new BaseClientDetails();
         portalServer.setClientId("PortalServer");
         portalServer.setClientSecret("this-is-the-portal-server-secret");
-        portalServer.setScope(Set.of("profile", "email"));
-        portalServer.setAutoApproveScopes(Set.of("profile", "email"));
-        portalServer.setAuthorizedGrantTypes(Set.of("authorization_code"));
         portalServer.setRegisteredRedirectUri(Set.of("http://localhost:8880/login"));
+        createTestClient(portalServer);
+
+        var microfrontendSampleServer = new BaseClientDetails();
+        microfrontendSampleServer.setClientId("MicrofrontendSampleServer");
+        microfrontendSampleServer.setClientSecret("this-is-the-microfrontend-sample-server-secret");
+        microfrontendSampleServer.setRegisteredRedirectUri(Set.of("http://localhost:8881/microfrontend-sample/login"));
+        createTestClient(microfrontendSampleServer);
+    }
+
+    private void createTestClient(BaseClientDetails clientDetails) {
         try {
-            clientRegistrationService.addClientDetails(portalServer);
-            log.warn("Created test client [PortalServer]");
+            clientDetails.setScope(Set.of("profile", "email"));
+            clientDetails.setAutoApproveScopes(Set.of("profile", "email"));
+            clientDetails.setAuthorizedGrantTypes(Set.of("authorization_code"));
+            clientRegistrationService.addClientDetails(clientDetails);
+            log.warn("Created test client [{}]", clientDetails.getClientId());
         } catch (ClientAlreadyExistsException ex) {
-            log.warn("Test client [PortalServer] already exists");
+            log.warn("Test client [{}] already exists", clientDetails.getClientId());
         }
     }
 }

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>portal-server</artifactId>
+    <artifactId>microfrontend-sample-server</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,18 +21,13 @@
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.pkhapps.playground.microservices</groupId>
-            <artifactId>portal-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <groupId>net.pkhapps.playground.microservices</groupId>
+            <artifactId>portal-support</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

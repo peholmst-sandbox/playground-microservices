@@ -1,16 +1,14 @@
 server:
-  port: 8880
+  port: 8881
   servlet:
-    session:
-      cookie:
-        name: PORTALUISESSION
+    context-path: /microfrontend-sample
 
 security:
   oauth2:
     client:
       access-token-uri: http://localhost:9990/oauth/token
-      client-id: PortalServer
-      client-secret: this-is-the-portal-server-secret
+      client-id: MicrofrontendSampleServer
+      client-secret: this-is-the-microfrontend-sample-server-secret
       user-authorization-uri: http://localhost:9990/oauth/authorize
       use-current-uri: true
       scope:
@@ -23,7 +21,3 @@ security:
         key-store-password: notasecret
         key-password: notasecret
       user-info-uri: IGNORE-ME # The application fails to start if this property is not present even though it is not needed.
-
-logging:
-  level:
-    org.springframework.security: info

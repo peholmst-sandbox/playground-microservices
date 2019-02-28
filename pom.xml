@@ -44,5 +44,7 @@
         <module>frontend-portal</module>
         <module>auth-server</module>
         <module>portal-server</module>
+        <module>microfrontend-sample-server</module>
+        <module>portal-support</module>
     </modules>
 </project>
